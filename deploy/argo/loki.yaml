@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/itobey/k3s-nuc.git 
+    targetRevision: HEAD
+    path: deploy/loki
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: loki
+  syncPolicy:
+    syncOptions: 
+    - CreateNamespace=true 

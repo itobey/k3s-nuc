@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: alertmanager
+  namespace: prometheus 
+spec:
+  rules:
+  - host: alertmanager.it-obey.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: prometheus-kube-prometheus-alertmanager 
+            port:
+              number: 9093
+        path: /
+        pathType: ImplementationSpecific

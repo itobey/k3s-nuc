@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-db
+  namespace: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.7
+        imagePullPolicy: IfNotPresent
+        name: mysql
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: MYSQL_DATABASE
+          value: exampledb
+        - name: MYSQL_USER
+          value: exampleuser
+        - name: MYSQL_PASSWORD
+          value: examplepass
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: grafana-db-pvc
+      restartPolicy: Always

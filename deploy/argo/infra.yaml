@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infra
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/itobey/k3s-nuc.git 
+    targetRevision: HEAD
+    path: deploy/infra
+    helm:
+      valueFiles:
+      - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default

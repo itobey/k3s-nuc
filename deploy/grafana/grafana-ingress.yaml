@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: grafana
+  namespace: grafana
+spec:
+  rules:
+  - host: grafana.it-obey.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        path: /
+        pathType: ImplementationSpecific
