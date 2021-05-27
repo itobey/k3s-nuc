@@ -5,7 +5,7 @@ metadata:
   namespace: grafana
 spec:
   rules:
-  - host: grafana.nuc
+  - host: grafana.nuc.local
     http:
       paths:
       - backend:

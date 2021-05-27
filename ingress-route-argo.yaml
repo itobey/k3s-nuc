@@ -8,7 +8,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`argo.nuc`)
+      match: Host(`argo.nuc.local`)
       priority: 10
       services:
         - name: argocd-server
