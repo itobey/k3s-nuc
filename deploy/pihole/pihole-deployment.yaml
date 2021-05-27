@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pihole
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+      - image: pihole/pihole:v5.8
+        imagePullPolicy: IfNotPresent
+        name: pihole
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 80
+          name: pihole-admin
+        - containerPort: 53
+          name: pihole-dns
+        volumeMounts:
+        - name: pihole-persistent-storage
+          mountPath: /etc/pihole/
+          subPath: etc
+        - name: pihole-persistent-storage
+          mountPath: /etc/dnsmasq.d/
+          subPath: dnsmasq
+      volumes:
+      - name: pihole-persistent-storage
+        persistentVolumeClaim:
+          claimName: pihole-pvc
+      restartPolicy: Always

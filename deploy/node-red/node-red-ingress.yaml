@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: node-red
+  namespace: node-red
+spec:
+  rules:
+  - host: node-red.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: node-red
+            port:
+              number: 1880
+        path: /
+        pathType: ImplementationSpecific

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kasa
+  name: kasa
+  namespace: kasa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kasa
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kasa
+    spec:
+      containers:
+      - image: fffonion/tplink-plug-exporter
+        imagePullPolicy: IfNotPresent
+        name: kasa
+        ports:
+        - containerPort: 9233
+          name: kasa
+      restartPolicy: Always

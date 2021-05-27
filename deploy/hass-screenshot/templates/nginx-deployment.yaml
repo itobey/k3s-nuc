@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hass-screenshot-nginx
+  name: hass-screenshot-nginx
+  namespace: hass-screenshot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hass-screenshot-nginx
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hass-screenshot-nginx
+    spec:
+      containers:
+      - image: nginx:1.21.1
+        imagePullPolicy: IfNotPresent
+        name: hass-screenshot-nginx
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 8080
+          name: nginx
+        volumeMounts:
+        - name: hass-screenshot-persistent-storage
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: hass-screenshot-persistent-storage
+        persistentVolumeClaim:
+          claimName: hass-screenshot-pvc
+      restartPolicy: Always

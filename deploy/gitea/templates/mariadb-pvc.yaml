@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gitea-mariadb-pvc
+  namespace: gitea
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: gitea-mariadb-pv
+  resources:
+    requests:
+      storage: 1Gi

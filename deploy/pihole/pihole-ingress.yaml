@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: pihole
+  namespace: pihole
+spec:
+  rules:
+  - host: pihole.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: pihole-tcp
+            port:
+              number: 8000
+        path: /
+        pathType: ImplementationSpecific

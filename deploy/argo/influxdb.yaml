@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: influxdb
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/itobey/k3s-nuc.git 
+    targetRevision: HEAD
+    path: deploy/influxdb
+    helm:
+      valueFiles:
+      - secrets.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: influxdb
+  syncPolicy:
+    syncOptions: 
+    - CreateNamespace=true 

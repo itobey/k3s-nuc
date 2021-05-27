@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mosquitto
+  name: mosquitto
+  namespace: mosquitto
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      containers:
+      - image: eclipse-mosquitto:2.0.11
+        imagePullPolicy: IfNotPresent
+        name: mosquitto
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 9001
+          name: mosquitto9001
+        - containerPort: 1883
+          name: mosquitto1883
+        volumeMounts:
+        - name: mosquitto-persistent-storage
+          mountPath: /mosquitto/config/mosquitto.conf
+          subPath: conf/mosquitto.conf
+        - name: mosquitto-persistent-storage
+          mountPath: /mosquitto/data/
+          subPath: data/
+        - name: mosquitto-persistent-storage
+          mountPath: /mosquitto/log/
+          subPath: log/		  
+      volumes:
+      - name: mosquitto-persistent-storage
+        persistentVolumeClaim:
+          claimName: mosquitto-pvc
+      restartPolicy: Always

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: homer
+  namespace: homer
+spec:
+  rules:
+  - host: homer.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: homer
+            port:
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hass-screenshot
+  name: hass-screenshot
+  namespace: hass-screenshot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hass-screenshot
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hass-screenshot
+    spec:
+      # for resolution of the web module iframe thingy
+      hostAliases:
+      - ip: "192.168.0.34"
+        hostnames:
+        - "grafana.nuc.local"
+      containers:
+      - image: ghcr.io/itobey/hass-lovelace-kindle-screensaver/hass-lovelace-kindle-screensaver:main
+        imagePullPolicy: Always
+        name: hass-screenshot
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: HA_BASE_URL
+          value: http://home-assistant.home-assistant:8123
+        - name: HA_SCREENSHOT_URL
+          value: /lovelace-dashboard/eink?kiosk
+        - name: HA_ACCESS_TOKEN
+          value: "{{ .Values.HA_ACCESS_TOKEN}}"
+        - name: RENDERING_SCREEN_HEIGHT
+          value: "825"
+        - name: RENDERING_SCREEN_WIDTH
+          value: "1200"
+        - name: RENDERING_DELAY
+          value: "5000"
+        - name: LANGUAGE
+          value: de
+        - name: CRON_JOB
+          value: "*/20 * * * *"
+        - name: OUTPUT_PATH
+          value: /output/output.jpg
+        # for Grafana iframes
+        - name: UNSAFE_IGNORE_CERTIFICATE_ERRORS
+          value: "true"
+        ports:
+        - containerPort: 5000
+          name: hass-screenshot
+        volumeMounts:
+        - name: hass-screenshot-persistent-storage
+          mountPath: /output
+      volumes:
+      - name: hass-screenshot-persistent-storage
+        persistentVolumeClaim:
+          claimName: hass-screenshot-pvc
+      restartPolicy: Always

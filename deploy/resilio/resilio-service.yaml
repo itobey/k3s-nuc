@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resilio
+  namespace: resilio
+  labels:
+    app: resilio
+spec:
+  ports:
+    - name: 8888-tcp
+      port: 8888
+      targetPort: 8888
+    - name: 55555-tcp
+      port: 55555
+      nodePort: 32555
+      targetPort: 55555
+  selector:
+    app: resilio
+  type: LoadBalancer

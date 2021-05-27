@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: homer
+  name: homer
+  namespace: homer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homer
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: homer
+        tier: frontend
+    spec:
+      containers:
+      - image: b4bz/homer:21.03.2
+        imagePullPolicy: IfNotPresent
+        name: homer
+        ports:
+        - containerPort: 8080
+          name: homer
+        volumeMounts:
+        - name: homer-persistent-storage
+          mountPath: /www/assets
+      volumes:
+      - name: homer-persistent-storage
+        persistentVolumeClaim:
+          claimName: homer-pvc
+      restartPolicy: Always

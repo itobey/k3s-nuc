@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: wireguard-pv
+  namespace: wireguard
+spec:
+  storageClassName: wireguard-manual
+  persistentVolumeReclaimPolicy: Retain
+  capacity:
+    storage: 50Mi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/media/enc/docker-volumes/wireguard"

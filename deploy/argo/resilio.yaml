@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: resilio
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/itobey/k3s-nuc.git 
+    targetRevision: HEAD
+    path: deploy/resilio
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: resilio
+  syncPolicy:
+    syncOptions: 
+    - CreateNamespace=true 

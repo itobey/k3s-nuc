@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: baikal-data-pvc
+  namespace: baikal
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: baikal-data-pv
+  resources:
+    requests:
+      storage: 1Gi

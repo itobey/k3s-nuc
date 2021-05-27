@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hass-screenshot-pvc
+  namespace: hass-screenshot
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hass-screenshot-pv
+  resources:
+    requests:
+      storage: 1Gi

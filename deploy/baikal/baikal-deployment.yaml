@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: baikal
+  name: baikal
+  namespace: baikal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: baikal
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: baikal
+    spec:
+      containers:
+      - image: ckulka/baikal:0.8.0
+        imagePullPolicy: IfNotPresent
+        name: baikal
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 80
+          name: baikal
+        volumeMounts:
+        - name: baikal-config-ha
+          mountPath: /var/www/baikal/vendor/sabre/dav/lib/CalDAV/Plugin.php
+          subPath: Plugin.php
+        - name: baikal-config
+          mountPath: /var/www/baikal/config
+        - name: baikal-data
+          mountPath: /var/www/baikal/Specific
+      volumes:
+      - name: baikal-config-ha
+        configMap:
+          name: baikal-config-ha-fix
+      - name: baikal-config
+        persistentVolumeClaim:
+          claimName: baikal-config-pvc
+      - name: baikal-data
+        persistentVolumeClaim:
+          claimName: baikal-data-pvc
+      restartPolicy: Always

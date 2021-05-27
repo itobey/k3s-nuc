@@ -1,0 +1,8 @@
+{
+  "kubernetes": {
+    "fileMatch": ["\\.yaml$"]
+  },
+  "ignorePaths": [
+    "deploy/datadog"    
+    ]
+}

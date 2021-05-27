@@ -1,0 +1,20 @@
+apiVersion: v1
+data:
+  application.yml: |
+    micronaut:
+      application:
+        name: datadogApi
+    datadog-api-gatherer:
+      nuc-max-ram: 15597
+      itobey-max-ram: 7772
+      odroid-max-ram: 3712
+      search-window: 10
+      influxdb:
+        server: http://influxdb.influxdb:8086
+        user: root
+        password: "{{ .Values.influxdb.password }}"
+        database: datadog_metrics
+kind: ConfigMap
+metadata:
+  name: datadog-api-collector-config
+  namespace: datadog-api-collector

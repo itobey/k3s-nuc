@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: hass-screenshot
+  namespace: hass-screenshot
+spec:
+  rules:
+  - host: hass-screenshot.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: hass-screenshot
+            port:
+              number: 5000
+        path: /
+        pathType: ImplementationSpecific

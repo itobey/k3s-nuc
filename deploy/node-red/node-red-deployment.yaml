@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: node-red
+  name: node-red
+  namespace: node-red
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-red
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: node-red
+    spec:
+      containers:
+      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready
+        imagePullPolicy: IfNotPresent
+        name: node-red
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        ports:
+        - containerPort: 1880
+          name: nodered1880
+        volumeMounts:
+        - name: node-red-persistent-storage
+          mountPath: /data  
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
+          runAsGroup: 0
+      volumes:
+      - name: node-red-persistent-storage
+        persistentVolumeClaim:
+          claimName: node-red-pvc
+      restartPolicy: Always

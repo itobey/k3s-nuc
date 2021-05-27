@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegraf-config
+  namespace: mosquitto
+data:
+  telegraf.conf: |
+    [[outputs.influxdb]]
+      urls = ["http://influxdb.influxdb:8086"]
+      database = "sensors"
+      skip_database_creation = true
+    
+    #[[outputs.file]]
+    # files = ["stdout", "/tmp/metrics.out"]
+    
+    [[inputs.mqtt_consumer]]
+      servers = ["tcp://mosquitto.mosquitto:1883"]
+      topics = [
+    	"home/#"
+      ]

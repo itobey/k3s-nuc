@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: datadog-api-collector
+  name: datadog-api-collector
+  namespace: datadog-api-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: datadog-api-collector
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: datadog-api-collector
+    spec:
+      containers:
+      - image: ghcr.io/itobey/datadog-api-collector/datadog-api-collector
+        imagePullPolicy: Always
+        name: datadog-api-collector
+        env:
+        - name: MICRONAUT_CONFIG_FILES
+          value: /datadog-api-collector/application.yml
+        - name: DD_SITE
+          value: datadoghq.eu
+        - name: DD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: datadog-api-collector-secret
+              key: apikey
+        - name: DD_APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: datadog-api-collector-secret
+              key: appkey
+        volumeMounts:
+        - name: config-volume
+          mountPath: /datadog-api-collector/application.yml
+          subPath: application.yml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: datadog-api-collector-config
+      restartPolicy: Always

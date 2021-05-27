@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: fddb-exporter
+spec:
+  schedule: "55 23 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: fddb-exporter
+            image: itobey/fddb-calories-exporter
+            imagePullPolicy: Always
+            env:
+            - name: FDDB_USER
+              value: "{{ .Values.fddb.user}}" 
+            - name: FDDB_PW
+              value: "{{ .Values.fddb.pw}}" 
+            - name: FDDB_COOKIE
+              value: "{{ .Values.fddb.cookie}}" 
+            - name: FDDB_POSTGRES
+              value: "{{ .Values.fddb.postgres}}" 
+            command:
+            - python
+            - exporter.py
+          restartPolicy: OnFailure

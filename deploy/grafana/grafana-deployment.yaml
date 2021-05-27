@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: grafana
+  name: grafana
+  namespace: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: grafana
+        tier: frontend
+    spec:
+      containers:
+      - image: grafana/grafana:8.0.4
+        imagePullPolicy: IfNotPresent
+        name: grafana
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: GF_PATHS_CONFIG
+          value: /var/lib/grafana/grafana.ini
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        ports:
+        - containerPort: 3000
+          name: grafana
+        volumeMounts:
+        - name: grafana-persistent-storage
+          mountPath: /var/lib/grafana
+      volumes:
+      - name: grafana-persistent-storage
+        persistentVolumeClaim:
+          claimName: grafana-pvc
+      restartPolicy: Always

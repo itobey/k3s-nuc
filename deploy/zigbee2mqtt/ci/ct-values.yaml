@@ -1,0 +1,8 @@
+ingress:
+  enabled: true
+persistence:
+  data:
+    enabled: true
+    emptyDir:
+      enabled: true
+    mountPath: /data
