@@ -11,4 +11,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/var/docker-volumes/grafana"
+    path: "/media/enc/docker-volumes/grafana"

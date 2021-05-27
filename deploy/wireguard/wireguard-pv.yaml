@@ -11,4 +11,4 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/var/docker-volumes/wireguard"
+    path: "/media/enc/docker-volumes/wireguard"
