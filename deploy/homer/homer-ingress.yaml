@@ -12,6 +12,6 @@ spec:
           service:
             name: homer
             port:
-              number: 1337
+              number: 8080
         path: /
         pathType: ImplementationSpecific
