@@ -92,6 +92,28 @@ prometheus:
             requests:
               storage: 10Gi
 
+  additionalScrapeConfigs:
+    - job_name: 'kasa'
+      static_configs:
+      - targets:
+        # IP of your smart plugs
+        - 192.168.0.51
+        - 192.168.0.52
+      metrics_path: /scrape
+      relabel_configs:
+        - source_labels : [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          # IP of the exporter
+          replacement: kasa:9233
+      
+    - job_name: 'kasa_exporter'
+      static_configs:
+        - targets:
+        # IP of the exporter
+        - kasa:9233
 #    resources:
 #      limits:
 #        cpu: "2"
