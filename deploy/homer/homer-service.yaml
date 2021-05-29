@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homer
+  namespace: homer
+  labels:
+    app: homer
+spec:
+  ports:
+    - port: 8080
+  selector:
+    app: homer
+    tier: frontend
+  type: ClusterIP
