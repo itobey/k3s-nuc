@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kasa
+  namespace: kasa
+  labels:
+    app: kasa
+spec:
+  ports:
+    - port: 9233
+  selector:
+    app: kasa
+  type: ClusterIP
