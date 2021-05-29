@@ -28,6 +28,8 @@ spec:
           value: Europe/Berlin
         - name: GF_PATHS_CONFIG
           value: /var/lib/grafana/grafana.ini
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: true
         ports:
         - containerPort: 3000
           name: grafana
