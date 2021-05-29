@@ -94,10 +94,9 @@ prometheus:
 
     additionalScrapeConfigs:     
       - job_name: 'kasa_exporter'
-              static_configs:
-                - targets:
-          # IP of the exporter
-                  - kasa.kasa:9233
+        static_configs:
+          - targets:
+            - kasa.kasa:9233
 #    resources:
 #      limits:
 #        cpu: "2"
