@@ -7,7 +7,7 @@ metadata:
   namespace: prometheus 
 spec:
   rules:
-  - host: grafana-prom.it-obey.com
+  - host: grafana-prom.nuc.local
     http:
       paths:
       - backend:
