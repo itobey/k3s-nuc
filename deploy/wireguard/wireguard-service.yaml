@@ -8,7 +8,7 @@ spec:
     app: wireguard
   ports:
     - name: 51820-tcp
-      port: 13338
+      port: 51820
       nodePort: 31338
       targetPort: 51820
       protocol: UDP
