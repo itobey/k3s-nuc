@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resilio
+  namespace: resilio
+  labels:
+    app: resilio
+spec:
+  ports:
+    - port: 8888
+    - name: 55555-tcp
+      port: 55555
+      nodePort: 35555
+      targetPort: 55555
+  selector:
+    app: resilio
+  type: ClusterIP

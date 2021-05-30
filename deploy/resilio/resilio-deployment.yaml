@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: resilio
+  name: resilio
+  namespace: resilio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resilio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: resilio
+    spec:
+      containers:
+      - image: resilio/sync:2.7.2
+        imagePullPolicy: IfNotPresent
+        name: resilio
+        ports:
+        - containerPort: 8888
+          name: resilio-8888
+        - containerPort: 55555
+          name: resilio-55555
+        volumeMounts:
+        - name: resilio-persistent-storage
+          mountPath: /mnt/sync
+      volumes:
+      - name: resilio-persistent-storage
+        persistentVolumeClaim:
+          claimName: resilio-pvc
+      restartPolicy: Always
