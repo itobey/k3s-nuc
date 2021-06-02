@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: telegraf
+  name: telegraf
+  namespace: telegraf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegraf
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: telegraf
+    spec:
+      containers:
+      - image: itobey/telegraf-fritzbox:1.0
+        imagePullPolicy: IfNotPresent
+        name: telegraf
+        env:
+        - name: INFLUXDB_URL
+          value: http://influxdb.influxdb:8086
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/telegraf/telegraf.conf
+          subPath: telegraf.conf
+      volumes:
+      - name: config-volume
+        secret:
+          secretName: telegraf-config
+      restartPolicy: Always
