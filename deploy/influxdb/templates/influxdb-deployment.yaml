@@ -36,6 +36,7 @@ spec:
           mountPath: /var/lib/influxdb
         - name: config-volume
           mountPath: /etc/influxdb/influxdb.conf
+          subPath: influxdb.conf
       volumes:
       - name: influxdb-persistent-storage
         persistentVolumeClaim:
