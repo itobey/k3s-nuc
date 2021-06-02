@@ -4,7 +4,7 @@ metadata:
   labels:
     app: telegraf
   name: telegraf
-  namespace: telegraf
+  namespace: telegraf-fritzbox
 spec:
   replicas: 1
   selector:
