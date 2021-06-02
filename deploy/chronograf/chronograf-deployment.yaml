@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: chronograf
+  name: chronograf
+  namespace: chronograf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chronograf
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: chronograf
+    spec:
+      containers:
+      - image: chronograf:1.8.8
+        imagePullPolicy: IfNotPresent
+        name: chronograf
+        env:
+        - name: INFLUXDB_URL
+          value: http://influxdb.influxdb:8086
+        ports:
+        - containerPort: 8888
+          name: chronograf
+      restartPolicy: Always

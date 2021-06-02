@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chronograf
+  namespace: chronograf
+spec:
+  rules:
+  - host: chronograf.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: chronograf
+            port:
+              number: 8888
+        path: /
+        pathType: ImplementationSpecific
