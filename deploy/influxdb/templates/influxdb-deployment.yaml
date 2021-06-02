@@ -27,7 +27,7 @@ spec:
         - name: INFLUXDB_USER
           value: telegraf
         - name: INFLUXDB_USER_PASSWORD
-          value: "{{ .Secrets.influxdb.user.password }}"
+          value: "{{ .Values.influxdb.user.password }}"
         ports:
         - containerPort: 8086
           name: influxdb
