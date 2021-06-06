@@ -21,7 +21,7 @@ spec:
             - name: FDDB_COOKIE
               value: "{{ .Values.fddb.cookie}}" 
             - name: FDDB_POSTGRES
-              value: postgresql://postgres:example@postgres.misc:5432/postgres
+              value: "{{ .Values.fddb.postgres}}" 
             command:
             - python
             - exporter.py
