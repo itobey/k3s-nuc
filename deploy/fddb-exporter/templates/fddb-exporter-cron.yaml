@@ -16,7 +16,7 @@ spec:
             - name: FDDB_USER
               value: "{{ .Values.fddb.user}}" 
             - name: FDDB_PW
-              value: "{{ .Values.fddb.password}}" 
+              value: "{{ .Values.fddb.pw}}" 
             - name: FDDB_COOKIE
               value: "{{ .Values.fddb.cookie}}" 
             - name: FDDB_POSTGRES
