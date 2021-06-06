@@ -9,6 +9,9 @@ spec:
     repoURL: https://github.com/itobey/k3s-nuc.git 
     targetRevision: HEAD
     path: deploy/fddb-exporter
+    helm:
+      valueFiles:
+      - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: fddb-exporter
