@@ -12,7 +12,6 @@ spec:
           - name: fddb-exporter
             image: itobey/fddb-calories-exporter
             imagePullPolicy: Always
-            workingDir: /usr/src/myapp
             env:
             - name: FDDB_USER
               value: "{{ .Values.fddb.user}}" 
