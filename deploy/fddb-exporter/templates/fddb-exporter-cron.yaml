@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: fddb-exporter
 spec:
-  schedule: "*/2 * * * *"
+  schedule: "55 23 * * *"
   jobTemplate:
     spec:
       template:
@@ -11,7 +11,7 @@ spec:
           containers:
           - name: fddb-exporter
             image: itobey/fddb-calories-exporter
-            imagePullPolicy: Always
+            imagePullPolicy: IfNotPresent
             env:
             - name: FDDB_USER
               value: "{{ .Values.fddb.user}}" 
