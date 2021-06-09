@@ -5,8 +5,6 @@
   "ignorePaths": [
     "deploy/prometheus",
     "deploy/argo",
-    "deploy/datadog",
-    "deploy/loki",
-    "deploy/zigbee2mqtt"
+    "deploy/loki"
     ]
 }
