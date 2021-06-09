@@ -1,5 +1,8 @@
 {
   "kubernetes": {
-    "fileMatch": ["deploy/grafana/.+\\.yaml$"]
-  }
+    "fileMatch": ["\\.yaml$"]
+  },
+  "ignorePaths": [
+    "deploy/prometheus"
+    ]
 }
