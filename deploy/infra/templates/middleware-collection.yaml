@@ -6,3 +6,4 @@ spec:
   chain:
     middlewares:
     - name: redirect-https
+    - name: websockets
