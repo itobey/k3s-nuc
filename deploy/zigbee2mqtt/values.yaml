@@ -29,7 +29,7 @@ ingress:
 
 persistence:
   data:
-    enabled: true
+    enabled: false
     emptyDir:
       enabled: false
     mountPath: /data
@@ -44,18 +44,18 @@ persistence:
     # size: 1Gi
     ## Do not delete the pvc upon helm uninstall
     # skipuninstall: false
-    existingClaim: "zigbee2mqtt-pvc"
+    # existingClaim: ""
 
 # Path to your zigbee device in the container
 additionalVolumeMounts: []
-  - name: usb
-    mountPath: /dev/ttyUSB0
+#  - name: usb
+#    mountPath: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2400981-if00
 
 # Path to your zigbee device on the host
 additionalVolumes: []
-  - name: usb
-    hostPath:
-      path: /dev/ttyUSB0
+#  - name: usb
+#    hostPath:
+#      path: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2400981-if00
 
 # affinity:
 #   nodeAffinity:
@@ -72,19 +72,19 @@ additionalVolumes: []
 config:
   # These will be applied ONLY on first run
   # Home Assistant integration (MQTT discovery)
-  homeassistant: true
+  homeassistant: false
 
   # allow new devices to join
   # WARNING: Disable this after all devices have been paired! (default: false)
   # Note: this will be controllable in the UI
-  permit_join: false
+  permit_join: true
 
   # MQTT settings
   mqtt:
     # MQTT base topic for zigbee2mqtt MQTT messages
     base_topic: zigbee2mqtt
     # MQTT server URL
-    server: "mqtt://mosquitto.mosquitto"
+    server: "mqtt://localhost"
     # MQTT server authentication, uncomment if required:
     # user: my_user
     # password: my_password
@@ -104,14 +104,14 @@ config:
     # adapter: deconz
 
   advanced:
-    network_key: NONE
+    network_key: GENERATE
     log_output:
       - console
     log_level: info
 
     # Optional: ZigBee channel, changing requires re-pairing of all devices. (Note: use a ZLL channel: 11, 15, 20, or 25 to avoid Problems)
     # default: 11
-    channel: 25
+    # channel: 11
 
     # Optional: Baudrate for serial port (default: 115200 for Z-Stack, 38400 for Deconz)
     # baudrate: 38400
