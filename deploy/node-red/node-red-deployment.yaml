@@ -28,7 +28,7 @@ spec:
         - containerPort: 1880
           name: nodered1880
         volumeMounts:
-        - name: node-red-data
+        - name: node-red-persistent-storage
           mountPath: /data  
         securityContext:
           allowPrivilegeEscalation: false
