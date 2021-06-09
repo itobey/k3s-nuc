@@ -9,6 +9,9 @@ spec:
     repoURL: https://github.com/itobey/k3s-nuc.git 
     targetRevision: HEAD
     path: deploy/zigbee2mqtt
+    helm:
+      valueFiles:
+      - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: zigbee2mqtt
