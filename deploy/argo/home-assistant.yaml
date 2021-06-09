@@ -9,6 +9,9 @@ spec:
     repoURL: https://github.com/itobey/k3s-nuc.git 
     targetRevision: HEAD
     path: deploy/home-assistant
+    helm:
+      valueFiles:
+      - secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: home-assistant
