@@ -5,18 +5,8 @@
   "ignorePaths": [
     "deploy/prometheus",
     "deploy/argo",
-    "deploy/chronograf",
     "deploy/datadog",
-    "deploy/fddb-exporter",
-    "deploy/grafana",
-    "deploy/home-assistant",
-    "deploy/homer",
-    "deploy/influxdb",
-    "deploy/infra",
-    "deploy/kasa",
     "deploy/loki",
-    "deploy/misc",
-    "deploy/mosquitto",
     "deploy/zigbee2mqtt"
     ]
 }
