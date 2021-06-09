@@ -1,5 +1,5 @@
 {
   "kubernetes": {
-    "fileMatch": ["\\.yaml$"]
+    "fileMatch": ["deploy/grafana/.+\\.yaml$"]
   }
 }
