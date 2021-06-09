@@ -1,0 +1,114 @@
+#
+# IMPORTANT NOTE
+#
+# This chart inherits from our common library chart. You can check the default values/options here:
+# https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common/values.yaml
+#
+
+image:
+  repository: homeassistant/home-assistant
+  pullPolicy: IfNotPresent
+  tag: 2021.5.5
+
+strategy:
+  type: Recreate
+
+env: 
+  TZ: "Europe/Berlin"
+
+service:
+  port:
+    port: 8123
+
+ingress:
+  enabled: false
+
+# Enable devices to be discoverable
+hostNetwork: true
+
+# When hostNetwork is true set dnsPolicy to ClusterFirstWithHostNet
+dnsPolicy: ClusterFirstWithHostNet
+
+# # Enable passing thru a USB device to Home Assistant
+# securityContext:
+#   privileged: true
+
+# Enable a prometheus-operator servicemonitor
+prometheus:
+  serviceMonitor:
+    enabled: false
+    ## See https://www.home-assistant.io/docs/authentication/ for where to find
+    ## long lived access token creation under your account profile, which is
+    ## needed to monitor Home Assistant
+    # bearerTokenSecret:
+    #   name: ""
+    #   key: ""
+    # interval: 1m
+    # additionalLabels: {}
+
+persistence:
+  config:
+    enabled: true
+    emptyDir:
+      enabled: false
+    ## Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    # storageClass: "-"
+    # accessMode: ReadWriteOnce
+    # size: 1Gi
+    ## Do not delete the pvc upon helm uninstall
+    # skipuninstall: false
+    existingClaim: "home-assistant-pvc"
+
+# # Path to your Z-Wave / Zigbee device in the container
+# additionalVolumeMounts:
+#   - name: zwave-usb
+#     mountPath: /dev/serial/by-id/usb-0658_0200-if00
+
+# # Path to your Z-Wave / Zigbee device on the host
+# additionalVolumes:
+#   - name: zwave-usb
+#     hostPath:
+#       path: /dev/serial/by-id/usb-0658_0200-if00
+
+# Enabled mariadb
+# ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/mariadb
+mariadb:
+  enabled: false
+  architecture: standalone
+  auth:
+    database: home-assistant
+    username: home-assistant
+    password: home-assistant-pass
+    rootPassword: home-assistantrootpass
+  primary:
+    persistence:
+      enabled: false
+      # storageClass: ""
+
+# Enabled postgres
+# ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+postgresql:
+  enabled: false
+  postgresqlUsername: home-assistant
+  postgresqlPassword: home-assistant-pass
+  postgresqlDatabase: home-assistant
+  persistence:
+    enabled: false
+    # storageClass: ""
+
+# Enable influxdb
+# ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/influxdb
+influxdb:
+  enabled: false
+  architecture: standalone
+  database: home_assistant
+  authEnabled: false
+  persistence:
+    enabled: false
+    # storageClass: ""
+    # size: 8Gi
