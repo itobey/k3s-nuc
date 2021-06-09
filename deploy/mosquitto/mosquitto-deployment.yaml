@@ -30,13 +30,13 @@ spec:
         - containerPort: 1883
           name: mosquitto1883
         volumeMounts:
-        - name: mosquitto-conf
+        - name: mosquitto-persistent-storage
           mountPath: /mosquitto/config/mosquitto.conf
           subPath: conf/mosquitto.conf
-        - name: mosquitto-data
+        - name: mosquitto-persistent-storage
           mountPath: /mosquitto/data/
           subPath: data/
-        - name: mosquitto-logs
+        - name: mosquitto-persistent-storage
           mountPath: /mosquitto/log/
           subPath: log/		  
       volumes:
