@@ -3,8 +3,7 @@
     "fileMatch": ["\\.yaml$"]
   },
   "ignorePaths": [
-    "deploy/prometheus",
-    "deploy/argo",
-    "deploy/loki"
+    "deploy/zigbee2mqtt",
+    "deploy/datadog"    
     ]
 }
