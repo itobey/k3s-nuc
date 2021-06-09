@@ -3,7 +3,6 @@
     "fileMatch": ["\\.yaml$"]
   },
   "ignorePaths": [
-    "deploy/zigbee2mqtt",
     "deploy/datadog"    
     ]
 }
