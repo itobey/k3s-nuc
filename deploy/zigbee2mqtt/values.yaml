@@ -24,8 +24,8 @@ ingress:
   enabled: false
 
 # Privileged may be required if USB controller is accessed directly through the host machine
-# securityContext:
-#   privileged: true
+securityContext:
+  privileged: true
 
 persistence:
   data:
