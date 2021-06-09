@@ -8,7 +8,9 @@ metadata:
 spec:
   ports:
     - port: 9001
+      name: mosquitto9001
     - port: 1883
+      name: mosquitto1883
   selector:
     app: mosquitto
   type: ClusterIP
