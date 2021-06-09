@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  rules:
+  - host: home-assistant.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: home-assistant
+            port:
+              number: 8123
+        path: /
+        pathType: ImplementationSpecific
