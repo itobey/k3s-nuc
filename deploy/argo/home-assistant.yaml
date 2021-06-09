@@ -11,7 +11,7 @@ spec:
     path: deploy/home-assistant
     helm:
       valueFiles:
-      - secrets.yaml
+      - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: home-assistant
