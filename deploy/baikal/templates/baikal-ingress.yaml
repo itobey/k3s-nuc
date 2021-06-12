@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: baikal
+  namespace: baikal
+spec:
+  rules:
+  - host: baikal.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: baikal
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
