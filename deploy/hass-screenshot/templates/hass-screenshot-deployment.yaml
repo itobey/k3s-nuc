@@ -36,6 +36,8 @@ spec:
           value: "1200"
         - name: LANGUAGE
           value: de
+        - name: CRON_JOB
+          value: "*/30 * * * *"
         ports:
         - containerPort: 5000
           name: hass-screenshot
