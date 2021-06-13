@@ -29,7 +29,7 @@ spec:
         - name: HA_SCREENSHOT_URL
           value: /lovelace-dashboard/eink?kiosk
         - name: HA_ACCESS_TOKEN
-          value: 
+          value: "{{ .Values.HA_ACCESS_TOKEN}}"
         - name: RENDERING_SCREEN_HEIGHT
           value: "825"
         - name: RENDERING_SCREEN_WIDTH
