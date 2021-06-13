@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hass-screenshot
+  name: hass-screenshot
+  namespace: hass-screenshot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hass-screenshot
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: hass-screenshot
+    spec:
+      containers:
+      - image: sibbl/hass-lovelace-kindle-screensaver
+        imagePullPolicy: IfNotPresent
+        name: hass-screenshot
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: HA_BASE_URL
+          value: http://home-assistant.home-assistant:8123
+        - name: HA_SCREENSHOT_URL
+          value: /lovelace-dashboard/eink?kiosk
+        - name: HA_ACCESS_TOKEN
+          value: 
+        - name: RENDERING_SCREEN_HEIGHT
+          value: "825"
+        - name: RENDERING_SCREEN_WIDTH
+          value: "1200"
+        - name: LANGUAGE
+          value: de
+        ports:
+        - containerPort: 5000
+          name: hass-screenshot
+        volumeMounts:
+        - name: hass-screenshot-persistent-storage
+          mountPath: /output
+      volumes:
+      - name: hass-screenshot-persistent-storage
+        persistentVolumeClaim:
+          claimName: hass-screenshot-pvc
+      restartPolicy: Always
