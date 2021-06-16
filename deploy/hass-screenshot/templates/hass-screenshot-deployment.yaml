@@ -35,7 +35,7 @@ spec:
         - name: RENDERING_SCREEN_WIDTH
           value: "1200"
         - name: RENDERING_DELAY
-          value: "2000"
+          value: "5000"
         - name: LANGUAGE
           value: de
         - name: CRON_JOB
