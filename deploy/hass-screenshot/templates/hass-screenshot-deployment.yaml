@@ -17,7 +17,7 @@ spec:
       labels:
         app: hass-screenshot
     spec:
-	  # for resolution of the web module iframe thingy
+      # for resolution of the web module iframe thingy
       hostAliases:
       - ip: "192.168.0.34"
         hostnames:
