@@ -11,7 +11,7 @@ spec:
     path: deploy/datadog-api-collector
     helm:
       valueFiles:
-      - values.yaml
+      - secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: datadog-api-collector
