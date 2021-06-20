@@ -4,9 +4,6 @@ data:
     micronaut:
       application:
         name: datadogApi
-    logging:
-      level:
-        root: DEBUG
     datadog-api-gatherer:
       nuc-max-ram: 15597
       itobey-max-ram: 7772
