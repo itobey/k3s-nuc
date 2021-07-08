@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hass-screenshot-nginx
+  namespace: hass-screenshot
+spec:
+  rules:
+  - host: hass-screenshot-nginx.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: hass-screenshot-nginx
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
