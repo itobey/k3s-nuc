@@ -29,7 +29,7 @@ spec:
           name: nginx
         volumeMounts:
         - name: hass-screenshot-persistent-storage
-          mountPath: /output
+          mountPath: /usr/share/nginx/html
       volumes:
       - name: hass-screenshot-persistent-storage
         persistentVolumeClaim:
