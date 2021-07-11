@@ -44,7 +44,7 @@ spec:
         - name: LANGUAGE
           value: de
         - name: CRON_JOB
-          value: "*/30 * * * *"
+          value: "*/20 * * * *"
         - name: OUTPUT_PATH
           value: /output/output.jpg
         ports:
