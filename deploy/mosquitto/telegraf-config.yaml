@@ -16,5 +16,5 @@ data:
     [[inputs.mqtt_consumer]]
       servers = ["tcp://mosquitto.mosquitto:1883"]
       topics = [
-    	"inkplate/#"
+    	"home/#"
       ]
