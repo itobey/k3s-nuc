@@ -13,4 +13,4 @@ spec:
       name: mosquitto1883
   selector:
     app: mosquitto
-  type: ClusterIP
+  type: LoadBalancer
