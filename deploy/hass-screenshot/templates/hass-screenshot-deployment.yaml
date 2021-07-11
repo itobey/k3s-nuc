@@ -23,7 +23,7 @@ spec:
         hostnames:
         - "grafana.nuc.local"
       containers:
-      - image: sibbl/hass-lovelace-kindle-screensaver
+      - image: ghcr.io/itobey/hass-lovelace-kindle-screensaver/hass-lovelace-kindle-screensaver:main
         imagePullPolicy: IfNotPresent
         name: hass-screenshot
         env:
@@ -45,6 +45,8 @@ spec:
           value: de
         - name: CRON_JOB
           value: "*/30 * * * *"
+        - name: OUTPUT_PATH
+          value: /output/output.png
         ports:
         - containerPort: 5000
           name: hass-screenshot
