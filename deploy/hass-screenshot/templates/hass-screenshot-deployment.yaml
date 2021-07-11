@@ -47,6 +47,9 @@ spec:
           value: "*/20 * * * *"
         - name: OUTPUT_PATH
           value: /output/output.jpg
+        # for Grafana iframes
+        - name: UNSAFE_IGNORE_CERTIFICATE_ERRORS
+          value: "true"
         ports:
         - containerPort: 5000
           name: hass-screenshot
