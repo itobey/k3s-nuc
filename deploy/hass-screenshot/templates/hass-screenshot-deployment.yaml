@@ -46,7 +46,7 @@ spec:
         - name: CRON_JOB
           value: "*/30 * * * *"
         - name: OUTPUT_PATH
-          value: /output/output.png
+          value: /output/output.jpg
         ports:
         - containerPort: 5000
           name: hass-screenshot
