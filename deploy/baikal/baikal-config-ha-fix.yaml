@@ -1,0 +1,452 @@
+# fix for HA CalDav Plugin, see: https://github.com/sabre-io/dav/issues/1318
+apiVersion: v1
+data:
+  Plugin.php: "<?php\n\ndeclare(strict_types=1);\n\nnamespace Sabre\\CalDAV;\n\nuse
+    DateTimeZone;\nuse Sabre\\CalDAV\\Xml\\Request\\CalendarMultiGetReport;\nuse Sabre\\DAV;\nuse
+    Sabre\\DAV\\Exception\\BadRequest;\nuse Sabre\\DAV\\INode;\nuse Sabre\\DAV\\MkCol;\nuse
+    Sabre\\DAV\\Xml\\Property\\LocalHref;\nuse Sabre\\DAVACL;\nuse Sabre\\HTTP;\nuse
+    Sabre\\HTTP\\RequestInterface;\nuse Sabre\\HTTP\\ResponseInterface;\nuse Sabre\\Uri;\nuse
+    Sabre\\VObject;\n\n/**\n * CalDAV plugin.\n *\n * This plugin provides functionality
+    added by CalDAV (RFC 4791)\n * It implements new reports, and the MKCALENDAR method.\n
+    *\n * @copyright Copyright (C) fruux GmbH (https://fruux.com/)\n * @author Evert
+    Pot (http://evertpot.com/)\n * @license http://sabre.io/license/ Modified BSD
+    License\n */\nclass Plugin extends DAV\\ServerPlugin\n{\n    /**\n     * This
+    is the official CalDAV namespace.\n     */\n    const NS_CALDAV = 'urn:ietf:params:xml:ns:caldav';\n\n
+    \   /**\n     * This is the namespace for the proprietary calendarserver extensions.\n
+    \    */\n    const NS_CALENDARSERVER = 'http://calendarserver.org/ns/';\n\n    /**\n
+    \    * The hardcoded root for calendar objects. It is unfortunate\n     * that
+    we're stuck with it, but it will have to do for now.\n     */\n    const CALENDAR_ROOT
+    = 'calendars';\n\n    /**\n     * Reference to server object.\n     *\n     *
+    @var DAV\\Server\n     */\n    protected $server;\n\n    /**\n     * The default
+    PDO storage uses a MySQL MEDIUMBLOB for iCalendar data,\n     * which can hold
+    up to 2^24 = 16777216 bytes. This is plenty. We're\n     * capping it to 10M here.\n
+    \    */\n    protected $maxResourceSize = 10000000;\n\n    /**\n     * Use this
+    method to tell the server this plugin defines additional\n     * HTTP methods.\n
+    \    *\n     * This method is passed a uri. It should only return HTTP methods
+    that are\n     * available for the specified uri.\n     *\n     * @param string
+    $uri\n     *\n     * @return array\n     */\n    public function getHTTPMethods($uri)\n
+    \   {\n        // The MKCALENDAR is only available on unmapped uri's, whose\n
+    \       // parents extend IExtendedCollection\n        list($parent, $name) =
+    Uri\\split($uri);\n\n        if ('' === $uri) {\n            $parent = '';\n        }\n\n
+    \       $node = $this->server->tree->getNodeForPath($parent);\n\n        if ($node
+    instanceof DAV\\IExtendedCollection) {\n            try {\n                $node->getChild($name);\n
+    \           } catch (DAV\\Exception\\NotFound $e) {\n                return ['MKCALENDAR'];\n
+    \           }\n        }\n\n        return [];\n    }\n\n    /**\n     * Returns
+    the path to a principal's calendar home.\n     *\n     * The return url must not
+    end with a slash.\n     * This function should return null in case a principal
+    did not have\n     * a calendar home.\n     *\n     * @param string $principalUrl\n
+    \    *\n     * @return string\n     */\n    public function getCalendarHomeForPrincipal($principalUrl)\n
+    \   {\n        // The default behavior for most sabre/dav servers is that there
+    is a\n        // principals root node, which contains users directly under it.\n
+    \       //\n        // This function assumes that there are two components in
+    a principal\n        // path. If there's more, we don't return a calendar home.
+    This\n        // excludes things like the calendar-proxy-read principal (which
+    it\n        // should).\n        $parts = explode('/', trim($principalUrl, '/'));\n
+    \       if (2 !== count($parts)) {\n            return;\n        }\n        if
+    ('principals' !== $parts[0]) {\n            return;\n        }\n\n        return
+    self::CALENDAR_ROOT.'/'.$parts[1];\n    }\n\n    /**\n     * Returns a list of
+    features for the DAV: HTTP header.\n     *\n     * @return array\n     */\n    public
+    function getFeatures()\n    {\n        return ['calendar-access', 'calendar-proxy'];\n
+    \   }\n\n    /**\n     * Returns a plugin name.\n     *\n     * Using this name
+    other plugins will be able to access other plugins\n     * using DAV\\Server::getPlugin\n
+    \    *\n     * @return string\n     */\n    public function getPluginName()\n
+    \   {\n        return 'caldav';\n    }\n\n    /**\n     * Returns a list of reports
+    this plugin supports.\n     *\n     * This will be used in the {DAV:}supported-report-set
+    property.\n     * Note that you still need to subscribe to the 'report' event
+    to actually\n     * implement them\n     *\n     * @param string $uri\n     *\n
+    \    * @return array\n     */\n    public function getSupportedReportSet($uri)\n
+    \   {\n        $node = $this->server->tree->getNodeForPath($uri);\n\n        $reports
+    = [];\n        if ($node instanceof ICalendarObjectContainer || $node instanceof
+    ICalendarObject) {\n            $reports[] = '{'.self::NS_CALDAV.'}calendar-multiget';\n
+    \           $reports[] = '{'.self::NS_CALDAV.'}calendar-query';\n        }\n        if
+    ($node instanceof ICalendar) {\n            $reports[] = '{'.self::NS_CALDAV.'}free-busy-query';\n
+    \       }\n        // iCal has a bug where it assumes that sync support is enabled,
+    only\n        // if we say we support it on the calendar-home, even though this
+    is\n        // not actually the case.\n        if ($node instanceof CalendarHome
+    && $this->server->getPlugin('sync')) {\n            $reports[] = '{DAV:}sync-collection';\n
+    \       }\n\n        return $reports;\n    }\n\n    /**\n     * Initializes the
+    plugin.\n     */\n    public function initialize(DAV\\Server $server)\n    {\n
+    \       $this->server = $server;\n\n        $server->on('method:MKCALENDAR', [$this,
+    'httpMkCalendar']);\n        $server->on('report', [$this, 'report']);\n        $server->on('propFind',
+    [$this, 'propFind']);\n        $server->on('onHTMLActionsPanel', [$this, 'htmlActionsPanel']);\n
+    \       $server->on('beforeCreateFile', [$this, 'beforeCreateFile']);\n        $server->on('beforeWriteContent',
+    [$this, 'beforeWriteContent']);\n        $server->on('afterMethod:GET', [$this,
+    'httpAfterGET']);\n        $server->on('getSupportedPrivilegeSet', [$this, 'getSupportedPrivilegeSet']);\n\n
+    \       $server->xml->namespaceMap[self::NS_CALDAV] = 'cal';\n        $server->xml->namespaceMap[self::NS_CALENDARSERVER]
+    = 'cs';\n\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Property\\\\SupportedCalendarComponentSet';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-query']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Request\\\\CalendarQueryReport';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}calendar-multiget']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Request\\\\CalendarMultiGetReport';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}free-busy-query']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Request\\\\FreeBusyQueryReport';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}mkcalendar']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Request\\\\MkCalendar';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}schedule-calendar-transp']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Property\\\\ScheduleCalendarTransp';\n        $server->xml->elementMap['{'.self::NS_CALDAV.'}supported-calendar-component-set']
+    = 'Sabre\\\\CalDAV\\\\Xml\\\\Property\\\\SupportedCalendarComponentSet';\n\n        $server->resourceTypeMapping['\\\\Sabre\\\\CalDAV\\\\ICalendar']
+    = '{urn:ietf:params:xml:ns:caldav}calendar';\n\n        $server->resourceTypeMapping['\\\\Sabre\\\\CalDAV\\\\Principal\\\\IProxyRead']
+    = '{http://calendarserver.org/ns/}calendar-proxy-read';\n        $server->resourceTypeMapping['\\\\Sabre\\\\CalDAV\\\\Principal\\\\IProxyWrite']
+    = '{http://calendarserver.org/ns/}calendar-proxy-write';\n\n        array_push($server->protectedProperties,\n
+    \           '{'.self::NS_CALDAV.'}supported-calendar-component-set',\n            '{'.self::NS_CALDAV.'}supported-calendar-data',\n
+    \           '{'.self::NS_CALDAV.'}max-resource-size',\n            '{'.self::NS_CALDAV.'}min-date-time',\n
+    \           '{'.self::NS_CALDAV.'}max-date-time',\n            '{'.self::NS_CALDAV.'}max-instances',\n
+    \           '{'.self::NS_CALDAV.'}max-attendees-per-instance',\n            '{'.self::NS_CALDAV.'}calendar-home-set',\n
+    \           '{'.self::NS_CALDAV.'}supported-collation-set',\n            '{'.self::NS_CALDAV.'}calendar-data',\n\n
+    \           // CalendarServer extensions\n            '{'.self::NS_CALENDARSERVER.'}getctag',\n
+    \           '{'.self::NS_CALENDARSERVER.'}calendar-proxy-read-for',\n            '{'.self::NS_CALENDARSERVER.'}calendar-proxy-write-for'\n
+    \       );\n\n        if ($aclPlugin = $server->getPlugin('acl')) {\n            $aclPlugin->principalSearchPropertySet['{'.self::NS_CALDAV.'}calendar-user-address-set']
+    = 'Calendar address';\n        }\n    }\n\n    /**\n     * This functions handles
+    REPORT requests specific to CalDAV.\n     *\n     * @param string $reportName\n
+    \    * @param mixed  $report\n     * @param mixed  $path\n     *\n     * @return
+    bool\n     */\n    public function report($reportName, $report, $path)\n    {\n
+    \       switch ($reportName) {\n            case '{'.self::NS_CALDAV.'}calendar-multiget':\n
+    \               $this->server->transactionType = 'report-calendar-multiget';\n
+    \               $this->calendarMultiGetReport($report);\n\n                return
+    false;\n            case '{'.self::NS_CALDAV.'}calendar-query':\n                $this->server->transactionType
+    = 'report-calendar-query';\n                $this->calendarQueryReport($report);\n\n
+    \               return false;\n            case '{'.self::NS_CALDAV.'}free-busy-query':\n
+    \               $this->server->transactionType = 'report-free-busy-query';\n                $this->freeBusyQueryReport($report);\n\n
+    \               return false;\n        }\n    }\n\n    /**\n     * This function
+    handles the MKCALENDAR HTTP method, which creates\n     * a new calendar.\n     *\n
+    \    * @return bool\n     */\n    public function httpMkCalendar(RequestInterface
+    $request, ResponseInterface $response)\n    {\n        $body = $request->getBodyAsString();\n
+    \       $path = $request->getPath();\n\n        $properties = [];\n\n        if
+    ($body) {\n            try {\n                $mkcalendar = $this->server->xml->expect(\n
+    \                   '{urn:ietf:params:xml:ns:caldav}mkcalendar',\n                    $body\n
+    \               );\n            } catch (\\Sabre\\Xml\\ParseException $e) {\n
+    \               throw new BadRequest($e->getMessage(), 0, $e);\n            }\n
+    \           $properties = $mkcalendar->getProperties();\n        }\n\n        //
+    iCal abuses MKCALENDAR since iCal 10.9.2 to create server-stored\n        // subscriptions.
+    Before that it used MKCOL which was the correct way\n        // to do this.\n
+    \       //\n        // If the body had a {DAV:}resourcetype, it means we stumbled
+    upon this\n        // request, and we simply use it instead of the pre-defined
+    list.\n        if (isset($properties['{DAV:}resourcetype'])) {\n            $resourceType
+    = $properties['{DAV:}resourcetype']->getValue();\n        } else {\n            $resourceType
+    = ['{DAV:}collection', '{urn:ietf:params:xml:ns:caldav}calendar'];\n        }\n\n
+    \       $this->server->createCollection($path, new MkCol($resourceType, $properties));\n\n
+    \       $response->setStatus(201);\n        $response->setHeader('Content-Length',
+    0);\n\n        // This breaks the method chain.\n        return false;\n    }\n\n
+    \   /**\n     * PropFind.\n     *\n     * This method handler is invoked before
+    any after properties for a\n     * resource are fetched. This allows us to add
+    in any CalDAV specific\n     * properties.\n     */\n    public function propFind(DAV\\PropFind
+    $propFind, DAV\\INode $node)\n    {\n        $ns = '{'.self::NS_CALDAV.'}';\n\n
+    \       if ($node instanceof ICalendarObjectContainer) {\n            $propFind->handle($ns.'max-resource-size',
+    $this->maxResourceSize);\n            $propFind->handle($ns.'supported-calendar-data',
+    function () {\n                return new Xml\\Property\\SupportedCalendarData();\n
+    \           });\n            $propFind->handle($ns.'supported-collation-set',
+    function () {\n                return new Xml\\Property\\SupportedCollationSet();\n
+    \           });\n        }\n\n        if ($node instanceof DAVACL\\IPrincipal)
+    {\n            $principalUrl = $node->getPrincipalUrl();\n\n            $propFind->handle('{'.self::NS_CALDAV.'}calendar-home-set',
+    function () use ($principalUrl) {\n                $calendarHomePath = $this->getCalendarHomeForPrincipal($principalUrl);\n
+    \               if (is_null($calendarHomePath)) {\n                    return
+    null;\n                }\n\n                return new LocalHref($calendarHomePath.'/');\n
+    \           });\n            // The calendar-user-address-set property is basically
+    mapped to\n            // the {DAV:}alternate-URI-set property.\n            $propFind->handle('{'.self::NS_CALDAV.'}calendar-user-address-set',
+    function () use ($node) {\n                $addresses = $node->getAlternateUriSet();\n
+    \               $addresses[] = $this->server->getBaseUri().$node->getPrincipalUrl().'/';\n\n
+    \               return new LocalHref($addresses);\n            });\n            //
+    For some reason somebody thought it was a good idea to add\n            // another
+    one of these properties. We're supporting it too.\n            $propFind->handle('{'.self::NS_CALENDARSERVER.'}email-address-set',
+    function () use ($node) {\n                $addresses = $node->getAlternateUriSet();\n
+    \               $emails = [];\n                foreach ($addresses as $address)
+    {\n                    if ('mailto:' === substr($address, 0, 7)) {\n                        $emails[]
+    = substr($address, 7);\n                    }\n                }\n\n                return
+    new Xml\\Property\\EmailAddressSet($emails);\n            });\n\n            //
+    These two properties are shortcuts for ical to easily find\n            // other
+    principals this principal has access to.\n            $propRead = '{'.self::NS_CALENDARSERVER.'}calendar-proxy-read-for';\n
+    \           $propWrite = '{'.self::NS_CALENDARSERVER.'}calendar-proxy-write-for';\n\n
+    \           if (404 === $propFind->getStatus($propRead) || 404 === $propFind->getStatus($propWrite))
+    {\n                $aclPlugin = $this->server->getPlugin('acl');\n                $membership
+    = $aclPlugin->getPrincipalMembership($propFind->getPath());\n                $readList
+    = [];\n                $writeList = [];\n\n                foreach ($membership
+    as $group) {\n                    $groupNode = $this->server->tree->getNodeForPath($group);\n\n
+    \                   $listItem = Uri\\split($group)[0].'/';\n\n                    //
+    If the node is either ap proxy-read or proxy-write\n                    // group,
+    we grab the parent principal and add it to the\n                    // list.\n
+    \                   if ($groupNode instanceof Principal\\IProxyRead) {\n                        $readList[]
+    = $listItem;\n                    }\n                    if ($groupNode instanceof
+    Principal\\IProxyWrite) {\n                        $writeList[] = $listItem;\n
+    \                   }\n                }\n\n                $propFind->set($propRead,
+    new LocalHref($readList));\n                $propFind->set($propWrite, new LocalHref($writeList));\n
+    \           }\n        } // instanceof IPrincipal\n\n        if ($node instanceof
+    ICalendarObject) {\n            // The calendar-data property is not supposed
+    to be a 'real'\n            // property, but in large chunks of the spec it does
+    act as such.\n            // Therefore we simply expose it as a property.\n            $propFind->handle('{'.self::NS_CALDAV.'}calendar-data',
+    function () use ($node) {\n                $val = $node->get();\n                if
+    (is_resource($val)) {\n                    $val = stream_get_contents($val);\n
+    \               }\n\n                // Taking out \\r to not screw up the xml
+    output\n                return str_replace(\"\\r\", '', $val);\n            });\n
+    \       }\n    }\n\n    /**\n     * This function handles the calendar-multiget
+    REPORT.\n     *\n     * This report is used by the client to fetch the content
+    of a series\n     * of urls. Effectively avoiding a lot of redundant requests.\n
+    \    *\n     * @param CalendarMultiGetReport $report\n     */\n    public function
+    calendarMultiGetReport($report)\n    {\n        $needsJson = 'application/calendar+json'
+    === $report->contentType;\n\n        $timeZones = [];\n        $propertyList =
+    [];\n\n        $paths = array_map(\n            [$this->server, 'calculateUri'],\n
+    \           $report->hrefs\n        );\n\n        foreach ($this->server->getPropertiesForMultiplePaths($paths,
+    $report->properties) as $uri => $objProps) {\n            if (($needsJson || $report->expand)
+    && isset($objProps[200]['{'.self::NS_CALDAV.'}calendar-data'])) {\n                $vObject
+    = VObject\\Reader::read($objProps[200]['{'.self::NS_CALDAV.'}calendar-data']);\n\n
+    \               if ($report->expand) {\n                    // We're expanding,
+    and for that we need to figure out the\n                    // calendar's timezone.\n
+    \                   list($calendarPath) = Uri\\split($uri);\n                    if
+    (!isset($timeZones[$calendarPath])) {\n                        // Checking the
+    calendar-timezone property.\n                        $tzProp = '{'.self::NS_CALDAV.'}calendar-timezone';\n
+    \                       $tzResult = $this->server->getProperties($calendarPath,
+    [$tzProp]);\n                        if (isset($tzResult[$tzProp])) {\n                            //
+    This property contains a VCALENDAR with a single\n                            //
+    VTIMEZONE.\n                            $vtimezoneObj = VObject\\Reader::read($tzResult[$tzProp]);\n
+    \                           $timeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();\n
+    \                       } else {\n                            // Defaulting to
+    UTC.\n                            $timeZone = new DateTimeZone('UTC');\n                        }\n
+    \                       $timeZones[$calendarPath] = $timeZone;\n                    }\n\n
+    \                   $vObject = $vObject->expand($report->expand['start'], $report->expand['end'],
+    $timeZones[$calendarPath]);\n                }\n                if ($needsJson)
+    {\n                    $objProps[200]['{'.self::NS_CALDAV.'}calendar-data'] =
+    json_encode($vObject->jsonSerialize());\n                } else {\n                    $objProps[200]['{'.self::NS_CALDAV.'}calendar-data']
+    = $vObject->serialize();\n                }\n                // Destroy circular
+    references so PHP will garbage collect the\n                // object.\n                $vObject->destroy();\n
+    \           }\n\n            $propertyList[] = $objProps;\n        }\n\n        $prefer
+    = $this->server->getHTTPPrefer();\n\n        $this->server->httpResponse->setStatus(207);\n
+    \       $this->server->httpResponse->setHeader('Content-Type', 'application/xml;
+    charset=utf-8');\n        $this->server->httpResponse->setHeader('Vary', 'Brief,Prefer');\n
+    \       $this->server->httpResponse->setBody($this->server->generateMultiStatus($propertyList,
+    'minimal' === $prefer['return']));\n    }\n\n    /**\n     * This function handles
+    the calendar-query REPORT.\n     *\n     * This report is used by clients to request
+    calendar objects based on\n     * complex conditions.\n     *\n     * @param Xml\\Request\\CalendarQueryReport
+    $report\n     */\n    public function calendarQueryReport($report)\n    {\n        $path
+    = $this->server->getRequestUri();\n\n        $needsJson = 'application/calendar+json'
+    === $report->contentType;\n\n        $node = $this->server->tree->getNodeForPath($this->server->getRequestUri());\n
+    \       $depth = $this->server->getHTTPDepth(0);\n\n        // The default result
+    is an empty array\n        $result = [];\n\n        $calendarTimeZone = null;\n
+    \      # if ($report->expand) {\n       #     // We're expanding, and for that
+    we need to figure out the\n       #     // calendar's timezone.\n       #     $tzProp
+    = '{'.self::NS_CALDAV.'}calendar-timezone';\n       #     $tzResult = $this->server->getProperties($path,
+    [$tzProp]);\n       #     if (isset($tzResult[$tzProp])) {\n       #         //
+    This property contains a VCALENDAR with a single\n       #         // VTIMEZONE.\n
+    \      #         $vtimezoneObj = VObject\\Reader::read($tzResult[$tzProp]);\n
+    \      #         $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();\n\n
+    \      #         // Destroy circular references so PHP will garbage collect the\n
+    \      #         // object.\n       #         $vtimezoneObj->destroy();\n       #
+    \    } else {\n       #         // Defaulting to UTC.\n       #         $calendarTimeZone
+    = new DateTimeZone('UTC');\n       #     }\n\t# }\n\t#\n\t\t# this is the fix
+    for HA, see https://github.com/sabre-io/dav/issues/1318\n        if ($report->expand)
+    {\n            // We're expanding, and for that we need to figure out the\n            //
+    calendar's timezone.\n            $tzProp = '{'.self::NS_CALDAV.'}calendar-timezone';\n
+    \           $tzResult = $this->server->getProperties($path, [$tzProp]);\n            if
+    (isset($tzResult[$tzProp])) {\n                $calendarTimeZone = new DateTimeZone($tzResult[$tzProp]);\n
+    \           } else {\n                // Defaulting to UTC.\n                $calendarTimeZone
+    = new DateTimeZone('UTC');\n            }\n        }\n        // The calendarobject
+    was requested directly. In this case we handle\n        // this locally.\n        if
+    (0 == $depth && $node instanceof ICalendarObject) {\n            $requestedCalendarData
+    = true;\n            $requestedProperties = $report->properties;\n\n            if
+    (!in_array('{urn:ietf:params:xml:ns:caldav}calendar-data', $requestedProperties))
+    {\n                // We always retrieve calendar-data, as we need it for filtering.\n
+    \               $requestedProperties[] = '{urn:ietf:params:xml:ns:caldav}calendar-data';\n\n
+    \               // If calendar-data wasn't explicitly requested, we need to remove\n
+    \               // it after processing.\n                $requestedCalendarData
+    = false;\n            }\n\n            $properties = $this->server->getPropertiesForPath(\n
+    \               $path,\n                $requestedProperties,\n                0\n
+    \           );\n\n            // This array should have only 1 element, the first
+    calendar\n            // object.\n            $properties = current($properties);\n\n
+    \           // If there wasn't any calendar-data returned somehow, we ignore\n
+    \           // this.\n            if (isset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']))
+    {\n                $validator = new CalendarQueryValidator();\n\n                $vObject
+    = VObject\\Reader::read($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);\n
+    \               if ($validator->validate($vObject, $report->filters)) {\n                    //
+    If the client didn't require the calendar-data property,\n                    //
+    we won't give it back.\n                    if (!$requestedCalendarData) {\n                        unset($properties[200]['{urn:ietf:params:xml:ns:caldav}calendar-data']);\n
+    \                   } else {\n                        if ($report->expand) {\n
+    \                           $vObject = $vObject->expand($report->expand['start'],
+    $report->expand['end'], $calendarTimeZone);\n                        }\n                        if
+    ($needsJson) {\n                            $properties[200]['{'.self::NS_CALDAV.'}calendar-data']
+    = json_encode($vObject->jsonSerialize());\n                        } elseif ($report->expand)
+    {\n                            $properties[200]['{'.self::NS_CALDAV.'}calendar-data']
+    = $vObject->serialize();\n                        }\n                    }\n\n
+    \                   $result = [$properties];\n                }\n                //
+    Destroy circular references so PHP will garbage collect the\n                //
+    object.\n                $vObject->destroy();\n            }\n        }\n\n        if
+    ($node instanceof ICalendarObjectContainer && 0 === $depth) {\n            if
+    (0 === strpos((string) $this->server->httpRequest->getHeader('User-Agent'), 'MSFT-'))
+    {\n                // Microsoft clients incorrectly supplied depth as 0, when
+    it actually\n                // should have set depth to 1. We're implementing
+    a workaround here\n                // to deal with this.\n                //\n
+    \               // This targets at least the following clients:\n                //
+    \  Windows 10\n                //   Windows Phone 8, 10\n                $depth
+    = 1;\n            } else {\n                throw new BadRequest('A calendar-query
+    REPORT on a calendar with a Depth: 0 is undefined. Set Depth to 1');\n            }\n
+    \       }\n\n        // If we're dealing with a calendar, the calendar itself
+    is responsible\n        // for the calendar-query.\n        if ($node instanceof
+    ICalendarObjectContainer && 1 == $depth) {\n            $nodePaths = $node->calendarQuery($report->filters);\n\n
+    \           foreach ($nodePaths as $path) {\n                list($properties)
+    =\n                    $this->server->getPropertiesForPath($this->server->getRequestUri().'/'.$path,
+    $report->properties);\n\n                if (($needsJson || $report->expand))
+    {\n                    $vObject = VObject\\Reader::read($properties[200]['{'.self::NS_CALDAV.'}calendar-data']);\n\n
+    \                   if ($report->expand) {\n                        $vObject =
+    $vObject->expand($report->expand['start'], $report->expand['end'], $calendarTimeZone);\n
+    \                   }\n\n                    if ($needsJson) {\n                        $properties[200]['{'.self::NS_CALDAV.'}calendar-data']
+    = json_encode($vObject->jsonSerialize());\n                    } else {\n                        $properties[200]['{'.self::NS_CALDAV.'}calendar-data']
+    = $vObject->serialize();\n                    }\n\n                    // Destroy
+    circular references so PHP will garbage collect the\n                    // object.\n
+    \                   $vObject->destroy();\n                }\n                $result[]
+    = $properties;\n            }\n        }\n\n        $prefer = $this->server->getHTTPPrefer();\n\n
+    \       $this->server->httpResponse->setStatus(207);\n        $this->server->httpResponse->setHeader('Content-Type',
+    'application/xml; charset=utf-8');\n        $this->server->httpResponse->setHeader('Vary',
+    'Brief,Prefer');\n        $this->server->httpResponse->setBody($this->server->generateMultiStatus($result,
+    'minimal' === $prefer['return']));\n    }\n\n    /**\n     * This method is responsible
+    for parsing the request and generating the\n     * response for the CALDAV:free-busy-query
+    REPORT.\n     */\n    protected function freeBusyQueryReport(Xml\\Request\\FreeBusyQueryReport
+    $report)\n    {\n        $uri = $this->server->getRequestUri();\n\n        $acl
+    = $this->server->getPlugin('acl');\n        if ($acl) {\n            $acl->checkPrivileges($uri,
+    '{'.self::NS_CALDAV.'}read-free-busy');\n        }\n\n        $calendar = $this->server->tree->getNodeForPath($uri);\n
+    \       if (!$calendar instanceof ICalendar) {\n            throw new DAV\\Exception\\NotImplemented('The
+    free-busy-query REPORT is only implemented on calendars');\n        }\n\n        $tzProp
+    = '{'.self::NS_CALDAV.'}calendar-timezone';\n\n        // Figuring out the default
+    timezone for the calendar, for floating\n        // times.\n        $calendarProps
+    = $this->server->getProperties($uri, [$tzProp]);\n\n        if (isset($calendarProps[$tzProp]))
+    {\n            $vtimezoneObj = VObject\\Reader::read($calendarProps[$tzProp]);\n
+    \           $calendarTimeZone = $vtimezoneObj->VTIMEZONE->getTimeZone();\n            //
+    Destroy circular references so PHP will garbage collect the object.\n            $vtimezoneObj->destroy();\n
+    \       } else {\n            $calendarTimeZone = new DateTimeZone('UTC');\n        }\n\n
+    \       // Doing a calendar-query first, to make sure we get the most\n        //
+    performance.\n        $urls = $calendar->calendarQuery([\n            'name' =>
+    'VCALENDAR',\n            'comp-filters' => [\n                [\n                    'name'
+    => 'VEVENT',\n                    'comp-filters' => [],\n                    'prop-filters'
+    => [],\n                    'is-not-defined' => false,\n                    'time-range'
+    => [\n                        'start' => $report->start,\n                        'end'
+    => $report->end,\n                    ],\n                ],\n            ],\n
+    \           'prop-filters' => [],\n            'is-not-defined' => false,\n            'time-range'
+    => null,\n        ]);\n\n        $objects = array_map(function ($url) use ($calendar)
+    {\n            $obj = $calendar->getChild($url)->get();\n\n            return
+    $obj;\n        }, $urls);\n\n        $generator = new VObject\\FreeBusyGenerator();\n
+    \       $generator->setObjects($objects);\n        $generator->setTimeRange($report->start,
+    $report->end);\n        $generator->setTimeZone($calendarTimeZone);\n        $result
+    = $generator->getResult();\n        $result = $result->serialize();\n\n        $this->server->httpResponse->setStatus(200);\n
+    \       $this->server->httpResponse->setHeader('Content-Type', 'text/calendar');\n
+    \       $this->server->httpResponse->setHeader('Content-Length', strlen($result));\n
+    \       $this->server->httpResponse->setBody($result);\n    }\n\n    /**\n     *
+    This method is triggered before a file gets updated with new content.\n     *\n
+    \    * This plugin uses this method to ensure that CalDAV objects receive\n     *
+    valid calendar data.\n     *\n     * @param string   $path\n     * @param resource
+    $data\n     * @param bool     $modified should be set to true, if this event handler\n
+    \    *                           changed &$data\n     */\n    public function
+    beforeWriteContent($path, DAV\\IFile $node, &$data, &$modified)\n    {\n        if
+    (!$node instanceof ICalendarObject) {\n            return;\n        }\n\n        //
+    We're onyl interested in ICalendarObject nodes that are inside of a\n        //
+    real calendar. This is to avoid triggering validation and scheduling\n        //
+    for non-calendars (such as an inbox).\n        list($parent) = Uri\\split($path);\n
+    \       $parentNode = $this->server->tree->getNodeForPath($parent);\n\n        if
+    (!$parentNode instanceof ICalendar) {\n            return;\n        }\n\n        $this->validateICalendar(\n
+    \           $data,\n            $path,\n            $modified,\n            $this->server->httpRequest,\n
+    \           $this->server->httpResponse,\n            false\n        );\n    }\n\n
+    \   /**\n     * This method is triggered before a new file is created.\n     *\n
+    \    * This plugin uses this method to ensure that newly created calendar\n     *
+    objects contain valid calendar data.\n     *\n     * @param string   $path\n     *
+    @param resource $data\n     * @param bool     $modified should be set to true,
+    if this event handler\n     *                           changed &$data\n     */\n
+    \   public function beforeCreateFile($path, &$data, DAV\\ICollection $parentNode,
+    &$modified)\n    {\n        if (!$parentNode instanceof ICalendar) {\n            return;\n
+    \       }\n\n        $this->validateICalendar(\n            $data,\n            $path,\n
+    \           $modified,\n            $this->server->httpRequest,\n            $this->server->httpResponse,\n
+    \           true\n        );\n    }\n\n    /**\n     * Checks if the submitted
+    iCalendar data is in fact, valid.\n     *\n     * An exception is thrown if it's
+    not.\n     *\n     * @param resource|string   $data\n     * @param string            $path\n
+    \    * @param bool              $modified should be set to true, if this event
+    handler\n     *                                    changed &$data\n     * @param
+    RequestInterface  $request  the http request\n     * @param ResponseInterface
+    $response the http response\n     * @param bool              $isNew    is the
+    item a new one, or an update\n     */\n    protected function validateICalendar(&$data,
+    $path, &$modified, RequestInterface $request, ResponseInterface $response, $isNew)\n
+    \   {\n        // If it's a stream, we convert it to a string first.\n        if
+    (is_resource($data)) {\n            $data = stream_get_contents($data);\n        }\n\n
+    \       $before = $data;\n\n        try {\n            // If the data starts with
+    a [, we can reasonably assume we're dealing\n            // with a jCal object.\n
+    \           if ('[' === substr($data, 0, 1)) {\n                $vobj = VObject\\Reader::readJson($data);\n\n
+    \               // Converting $data back to iCalendar, as that's what we\n                //
+    technically support everywhere.\n                $data = $vobj->serialize();\n
+    \               $modified = true;\n            } else {\n                $vobj
+    = VObject\\Reader::read($data);\n            }\n        } catch (VObject\\ParseException
+    $e) {\n            throw new DAV\\Exception\\UnsupportedMediaType('This resource
+    only supports valid iCalendar 2.0 data. Parse error: '.$e->getMessage());\n        }\n\n
+    \       if ('VCALENDAR' !== $vobj->name) {\n            throw new DAV\\Exception\\UnsupportedMediaType('This
+    collection can only support iCalendar objects.');\n        }\n\n        $sCCS
+    = '{urn:ietf:params:xml:ns:caldav}supported-calendar-component-set';\n\n        //
+    Get the Supported Components for the target calendar\n        list($parentPath)
+    = Uri\\split($path);\n        $calendarProperties = $this->server->getProperties($parentPath,
+    [$sCCS]);\n\n        if (isset($calendarProperties[$sCCS])) {\n            $supportedComponents
+    = $calendarProperties[$sCCS]->getValue();\n        } else {\n            $supportedComponents
+    = ['VJOURNAL', 'VTODO', 'VEVENT'];\n        }\n\n        $foundType = null;\n\n
+    \       foreach ($vobj->getComponents() as $component) {\n            switch ($component->name)
+    {\n                case 'VTIMEZONE':\n                    continue 2;\n                case
+    'VEVENT':\n                case 'VTODO':\n                case 'VJOURNAL':\n                    $foundType
+    = $component->name;\n                    break;\n            }\n        }\n\n
+    \       if (!$foundType || !in_array($foundType, $supportedComponents)) {\n            throw
+    new Exception\\InvalidComponentType('iCalendar objects must at least have a component
+    of type '.implode(', ', $supportedComponents));\n        }\n\n        $options
+    = VObject\\Node::PROFILE_CALDAV;\n        $prefer = $this->server->getHTTPPrefer();\n\n
+    \       if ('strict' !== $prefer['handling']) {\n            $options |= VObject\\Node::REPAIR;\n
+    \       }\n\n        $messages = $vobj->validate($options);\n\n        $highestLevel
+    = 0;\n        $warningMessage = null;\n\n        // $messages contains a list
+    of problems with the vcard, along with\n        // their severity.\n        foreach
+    ($messages as $message) {\n            if ($message['level'] > $highestLevel)
+    {\n                // Recording the highest reported error level.\n                $highestLevel
+    = $message['level'];\n                $warningMessage = $message['message'];\n
+    \           }\n            switch ($message['level']) {\n                case
+    1:\n                    // Level 1 means that there was a problem, but it was
+    repaired.\n                    $modified = true;\n                    break;\n
+    \               case 2:\n                    // Level 2 means a warning, but not
+    critical\n                    break;\n                case 3:\n                    //
+    Level 3 means a critical error\n                    throw new DAV\\Exception\\UnsupportedMediaType('Validation
+    error in iCalendar: '.$message['message']);\n            }\n        }\n        if
+    ($warningMessage) {\n            $response->setHeader(\n                'X-Sabre-Ew-Gross',\n
+    \               'iCalendar validation warning: '.$warningMessage\n            );\n
+    \       }\n\n        // We use an extra variable to allow event handles to tell
+    us whether\n        // the object was modified or not.\n        //\n        //
+    This helps us determine if we need to re-serialize the object.\n        $subModified
+    = false;\n\n        $this->server->emit(\n            'calendarObjectChange',\n
+    \           [\n                $request,\n                $response,\n                $vobj,\n
+    \               $parentPath,\n                &$subModified,\n                $isNew,\n
+    \           ]\n        );\n\n        if ($modified || $subModified) {\n            //
+    An event handler told us that it modified the object.\n            $data = $vobj->serialize();\n\n
+    \           // Using md5 to figure out if there was an *actual* change.\n            if
+    (!$modified && 0 !== strcmp($data, $before)) {\n                $modified = true;\n
+    \           }\n        }\n\n        // Destroy circular references so PHP will
+    garbage collect the object.\n        $vobj->destroy();\n    }\n\n    /**\n     *
+    This method is triggered whenever a subsystem reqeuests the privileges\n     *
+    that are supported on a particular node.\n     */\n    public function getSupportedPrivilegeSet(INode
+    $node, array &$supportedPrivilegeSet)\n    {\n        if ($node instanceof ICalendar)
+    {\n            $supportedPrivilegeSet['{DAV:}read']['aggregates']['{'.self::NS_CALDAV.'}read-free-busy']
+    = [\n                'abstract' => false,\n                'aggregates' => [],\n
+    \           ];\n        }\n    }\n\n    /**\n     * This method is used to generate
+    HTML output for the\n     * DAV\\Browser\\Plugin. This allows us to generate an
+    interface users\n     * can use to create new calendars.\n     *\n     * @param
+    string $output\n     *\n     * @return bool\n     */\n    public function htmlActionsPanel(DAV\\INode
+    $node, &$output)\n    {\n        if (!$node instanceof CalendarHome) {\n            return;\n
+    \       }\n\n        $output .= '<tr><td colspan=\"2\"><form method=\"post\" action=\"\">\n
+    \           <h3>Create new calendar</h3>\n            <input type=\"hidden\" name=\"sabreAction\"
+    value=\"mkcol\" />\n            <input type=\"hidden\" name=\"resourceType\" value=\"{DAV:}collection,{'.self::NS_CALDAV.'}calendar\"
+    />\n            <label>Name (uri):</label> <input type=\"text\" name=\"name\"
+    /><br />\n            <label>Display name:</label> <input type=\"text\" name=\"{DAV:}displayname\"
+    /><br />\n            <input type=\"submit\" value=\"create\" />\n            </form>\n
+    \           </td></tr>';\n\n        return false;\n    }\n\n    /**\n     * This
+    event is triggered after GET requests.\n     *\n     * This is used to transform
+    data into jCal, if this was requested.\n     */\n    public function httpAfterGet(RequestInterface
+    $request, ResponseInterface $response)\n    {\n        $contentType = $response->getHeader('Content-Type');\n
+    \       if (null === $contentType || false === strpos($contentType, 'text/calendar'))
+    {\n            return;\n        }\n\n        $result = HTTP\\negotiateContentType(\n
+    \           $request->getHeader('Accept'),\n            ['text/calendar', 'application/calendar+json']\n
+    \       );\n\n        if ('application/calendar+json' !== $result) {\n            //
+    Do nothing\n            return;\n        }\n\n        // Transforming.\n        $vobj
+    = VObject\\Reader::read($response->getBody());\n\n        $jsonBody = json_encode($vobj->jsonSerialize());\n
+    \       $response->setBody($jsonBody);\n\n        // Destroy circular references
+    so PHP will garbage collect the object.\n        $vobj->destroy();\n\n        $response->setHeader('Content-Type',
+    'application/calendar+json');\n        $response->setHeader('Content-Length',
+    strlen($jsonBody));\n    }\n\n    /**\n     * Returns a bunch of meta-data about
+    the plugin.\n     *\n     * Providing this information is optional, and is mainly
+    displayed by the\n     * Browser plugin.\n     *\n     * The description key in
+    the returned array may contain html and will not\n     * be sanitized.\n     *\n
+    \    * @return array\n     */\n    public function getPluginInfo()\n    {\n        return
+    [\n            'name' => $this->getPluginName(),\n            'description' =>
+    'Adds support for CalDAV (rfc4791)',\n            'link' => 'http://sabre.io/dav/caldav/',\n
+    \       ];\n    }\n}\n"
+kind: ConfigMap
+metadata:
+  name: baikal-config-ha-fix
+  namespace: baikal
