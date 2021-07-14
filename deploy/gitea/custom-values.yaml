@@ -2,3 +2,15 @@ gitea:
   admin:
     #existingSecret: gitea-admin-secret
     username: tobey
+    password: giteapass
+	
+postgresql:
+  global:
+    postgresql:
+      postgresqlDatabase: gitea
+      postgresqlUsername: gitea
+      postgresqlPassword: postgrespass
+      servicePort: 5432
+  persistence:
+    size: 1Gi
+    existingClaim: gitea-postgres-pvc
