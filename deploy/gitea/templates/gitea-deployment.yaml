@@ -27,7 +27,7 @@ spec:
         - name: GITEA__database__DB_TYPE
           value: mysql
         - name: GITEA__database__HOST
-          value: gitea-mariadb:3306
+          value: mariadb:3306
         - name: GITEA__database__NAME
           value: gitea
         - name: GITEA__database__USER
@@ -37,8 +37,6 @@ spec:
         ports:
         - containerPort: 3000
           name: gitea
-        - containerPort: 22
-          name: ssh
         volumeMounts:
         - name: gitea-persistent-storage
           mountPath: /data
