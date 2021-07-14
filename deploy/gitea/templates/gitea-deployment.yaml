@@ -27,7 +27,7 @@ spec:
         - name: GITEA__database__DB_TYPE
           value: mysql
         - name: GITEA__database__HOST
-          value: mariadb:3306
+          value: gitea-mariadb:3306
         - name: GITEA__database__NAME
           value: gitea
         - name: GITEA__database__USER
