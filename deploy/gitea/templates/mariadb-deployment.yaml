@@ -20,7 +20,7 @@ spec:
         tier: mariadb
     spec:
       containers:
-      - image: mariadb:10.6.0
+      - image: mariadb:10.6.3
         imagePullPolicy: IfNotPresent
         name: mariadb
         env:
