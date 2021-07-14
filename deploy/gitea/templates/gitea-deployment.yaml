@@ -24,6 +24,16 @@ spec:
         env:
         - name: TZ
           value: Europe/Berlin
+        - name: GITEA__database__DB_TYPE
+          value: mysql
+        - name: GITEA__database__HOST
+          value: mariadb:3306
+        - name: GITEA__database__NAME
+          value: gitea
+        - name: GITEA__database__USER
+          value: gitea
+        - name: GITEA__database__PASSWD
+          value: "{{ .Values.mariadb.password}}"
         ports:
         - containerPort: 3000
           name: gitea
