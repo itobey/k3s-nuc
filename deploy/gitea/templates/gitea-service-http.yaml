@@ -15,8 +15,5 @@ spec:
     port: 3000
     protocol: TCP
     targetPort: 3000
-  selector:
-    app.kubernetes.io/instance: gitea
-    app.kubernetes.io/name: gitea
   sessionAffinity: None
   type: ClusterIP
