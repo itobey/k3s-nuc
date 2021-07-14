@@ -15,8 +15,5 @@ spec:
     port: 22
     protocol: TCP
     targetPort: 22
-  selector:
-    app.kubernetes.io/instance: gitea
-    app.kubernetes.io/name: gitea
   sessionAffinity: None
   type: ClusterIP
