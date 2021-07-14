@@ -12,8 +12,8 @@ spec:
       paths:
       - backend:
           service:
-            name: gitea
+            name: gitea-http
             port:
               number: 3000
         path: /
-        pathType: ImplementationSpecific
+        pathType: Prefix
