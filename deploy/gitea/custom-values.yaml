@@ -3,7 +3,7 @@ gitea:
     #existingSecret: gitea-admin-secret
     username: tobey
     password: giteapass
-	
+
 postgresql:
   global:
     postgresql:
