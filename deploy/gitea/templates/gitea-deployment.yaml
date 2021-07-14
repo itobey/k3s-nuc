@@ -21,8 +21,6 @@ spec:
       - image: gitea/gitea:1.14.4
         imagePullPolicy: IfNotPresent
         name: gitea
-        securityContext:
-          runAsUser: 1000
         env:
         - name: TZ
           value: Europe/Berlin
@@ -44,8 +42,6 @@ spec:
         volumeMounts:
         - name: gitea-persistent-storage
           mountPath: /data
-      securityContext:
-        fsGroup: 1000
       volumes:
       - name: gitea-persistent-storage
         persistentVolumeClaim:
