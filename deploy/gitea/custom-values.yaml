@@ -1,0 +1,4 @@
+gitea:
+  admin:
+    #existingSecret: gitea-admin-secret
+    username: tobey

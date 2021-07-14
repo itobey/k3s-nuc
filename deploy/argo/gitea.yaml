@@ -11,7 +11,8 @@ spec:
     path: deploy/gitea
     helm:
       valueFiles:
-      - secrets.yaml
+      - values.yaml
+      - custom-values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: gitea
