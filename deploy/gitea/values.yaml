@@ -267,7 +267,7 @@ postgresql:
       servicePort: 5432
   persistence:
     size: 10Gi
-    #existingClaim: gitea-postgres-pvc
+    existingClaim: gitea-postgres-pvc
 
 mysql:
   root:
