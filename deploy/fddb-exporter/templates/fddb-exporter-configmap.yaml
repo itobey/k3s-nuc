@@ -15,6 +15,9 @@ data:
       fddb:
         cookie: "{{ .Values.fddb.cookie }}"
         basicauth: "{{ .Values.fddb.basicauth }}"
+    logger:
+      levels:
+        root: INFO
 kind: ConfigMap
 metadata:
   name: fddb-exporter-config
