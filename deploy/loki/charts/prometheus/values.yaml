@@ -984,7 +984,7 @@ pushgateway:
   ##
   image:
     repository: prom/pushgateway
-    tag: v1.4.1
+    tag: v1.4.2
     pullPolicy: IfNotPresent
 
   ## pushgateway priorityClassName
