@@ -20,7 +20,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: b4bz/homer:21.03.2
+      - image: b4bz/homer:21.09.2
         imagePullPolicy: IfNotPresent
         name: homer
         ports:
