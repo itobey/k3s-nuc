@@ -714,7 +714,7 @@ backup:
       image:
         registry: docker.io
         repository: bitnami/azure-cli
-        tag: 2.29.0-debian-10-r4
+        tag: 2.31.0-debian-10-r4
 
         ## Specify a imagePullPolicy. Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
         ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
