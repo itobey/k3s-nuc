@@ -18,7 +18,7 @@ spec:
         app: telegraf
     spec:
       containers:
-      - image: itobey/telegraf-fritzbox:1.0
+      - image: itobey/telegraf-fritzbox:1.1
         imagePullPolicy: Always
         name: telegraf
         env:
