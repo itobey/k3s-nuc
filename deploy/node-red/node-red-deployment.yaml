@@ -18,8 +18,8 @@ spec:
         app: node-red
     spec:
       containers:
-      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready
-        imagePullPolicy: IfNotPresent
+      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready:1.2.9
+        imagePullPolicy: Always
         name: node-red
         env:
         - name: TZ
