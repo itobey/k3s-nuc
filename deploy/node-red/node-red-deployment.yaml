@@ -18,7 +18,7 @@ spec:
         app: node-red
     spec:
       containers:
-      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready:1.2.9
+      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready:2.1.4
         imagePullPolicy: Always
         name: node-red
         env:
