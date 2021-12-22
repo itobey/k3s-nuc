@@ -18,7 +18,7 @@ spec:
         app: fddb-exporter
     spec:
       containers:
-      - image: ghcr.io/itobey/fddb-exporter/fddb-exporter 
+      - image: ghcr.io/itobey/fddb-exporter/fddb-exporter:0.1
         imagePullPolicy: Always
         name: fddb-exporter
         env:
