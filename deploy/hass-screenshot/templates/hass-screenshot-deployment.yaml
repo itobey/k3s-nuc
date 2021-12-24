@@ -41,6 +41,8 @@ spec:
           value: "1200"
         - name: RENDERING_DELAY
           value: "5000"
+        - name: RENDERING_TIMEOUT
+          value: "20000"
         - name: LANGUAGE
           value: de
         - name: CRON_JOB
