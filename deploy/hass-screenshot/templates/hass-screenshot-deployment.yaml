@@ -52,6 +52,8 @@ spec:
         # for Grafana iframes
         - name: UNSAFE_IGNORE_CERTIFICATE_ERRORS
           value: "true"
+        - name: COLOR_MODE
+          value: "TrueColor"
         ports:
         - containerPort: 5000
           name: hass-screenshot
