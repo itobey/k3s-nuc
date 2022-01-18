@@ -15,7 +15,7 @@ dependencies:
 - condition: influxdb.enabled
   name: influxdb
   repository: https://charts.bitnami.com/bitnami
-  version: 1.1.9
+  version: 2.6.1
 description: Home Assistant
 home: https://github.com/k8s-at-home/charts/tree/master/charts/stable/home-assistant
 icon: https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Home_Assistant_Logo.svg/519px-Home_Assistant_Logo.svg.png
