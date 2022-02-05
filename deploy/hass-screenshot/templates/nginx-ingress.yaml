@@ -12,6 +12,6 @@ spec:
           service:
             name: hass-screenshot-nginx
             port:
-              number: 80
+              number: 81
         path: /
         pathType: ImplementationSpecific
