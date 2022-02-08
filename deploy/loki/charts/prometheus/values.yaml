@@ -343,7 +343,7 @@ configmapReload:
     ##
     image:
       repository: jimmidyson/configmap-reload
-      tag: v0.5.0
+      tag: v0.7.1
       pullPolicy: IfNotPresent
 
     ## Additional configmap-reload container arguments
@@ -381,7 +381,7 @@ configmapReload:
     ##
     image:
       repository: jimmidyson/configmap-reload
-      tag: v0.5.0
+      tag: v0.7.1
       pullPolicy: IfNotPresent
 
     ## Additional configmap-reload container arguments
