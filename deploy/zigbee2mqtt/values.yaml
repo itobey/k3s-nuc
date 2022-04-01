@@ -8,7 +8,7 @@
 image:
   repository: koenkk/zigbee2mqtt
   pullPolicy: IfNotPresent
-  tag: 1.22.1
+  tag: 1.25.0
 
 strategy:
   type: Recreate
