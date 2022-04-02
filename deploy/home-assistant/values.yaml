@@ -8,7 +8,7 @@
 image:
   repository: homeassistant/home-assistant
   pullPolicy: IfNotPresent
-  tag: 2021.12.1
+  tag: 2021.12.10
 
 strategy:
   type: Recreate
