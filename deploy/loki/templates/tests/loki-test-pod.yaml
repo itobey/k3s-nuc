@@ -12,7 +12,7 @@ metadata:
 spec:
   containers:
   - name: test
-    image: bats/bats:v1.2.1
+    image: bats/bats:v1.1.0
     args:
     - /var/lib/loki/test.sh
     env:
