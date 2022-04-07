@@ -18,7 +18,7 @@ spec:
         app: resilio
     spec:
       containers:
-      - image: resilio/sync:2.7.2
+      - image: resilio/sync:2.7.3
         imagePullPolicy: IfNotPresent
         name: resilio
         ports:
