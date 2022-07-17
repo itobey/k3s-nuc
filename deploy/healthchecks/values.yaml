@@ -1,0 +1,25 @@
+postgres:
+    password: ENC[AES256_GCM,data:Pexeu+V9KQ==,iv:sX28TT71qNC31U728nTvTl8et2kWF+vxURkMnpS9He0=,tag:S8umfff4MipgatgqOk9l2A==,type:str]
+fddb:
+    cookie: ENC[AES256_GCM,data:fYRQRxbsqwkCyPD9MbksweKTU/wqR08DgmU=,iv:/dyotjxI7RQql+Ua79GI+BvOIcn15bXVtqCk4/ytwKk=,tag:TNobA0ANp1HCeHsqS94+Lw==,type:str]
+    basicauth: ENC[AES256_GCM,data:MZXeuEZsk1eBdnvtQiAn9P2MnJsvMqw8jr1jMUsUN/0NFOqLUGiZBBviAU0=,iv:PKq/Ib3Fd+FuLsakODiS9uYoPc+iintpDaP1bF82bMY=,tag:qdDBuAshue6/aei/juNq+g==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age17f7w8ddvxm4mrgpl0h7r8ng48lc9qmgj0fgsa4jnd399mtd2j5qquf59m4
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBRY2VVMUVnM2JlRzEva0p5
+            bC9TeTNRZE5Qdis5dVpUelU1RWw4QlhuMVZJClNKRFNVUk1rd2U5d2wxVG9NZElC
+            VkJ3bUJNNzhmeWxjcTNrQUp6ZUZBK1kKLS0tIEpRQUVqS3hJRDdVdkthSEkybDZT
+            eG5YZzFKVHQzTldaOFVhZFdQMnNhYWsKHrleo3cND9Ib2oy1YOejvsAjnUcpP++c
+            jYaPKYeDdytCdCmnQ9VsxwBxOwc7Rkw/sSaZa+BqyLCeMqhafHVDnw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2021-08-25T15:20:03Z"
+    mac: ENC[AES256_GCM,data:ywf4iSX3VYChHqd4ty8NSrK/OdjfXJD5+F+AXxW383Q792IW/UiGpQNGZeFQZv6E/OzpT/S+F4g+DDx70DQQPgorpCHWAHLw44SAzk9MryxukLRTXud9A+GNCrtdp03o++DH7s/RSNFEJAZFaUxcqUObVm8OpIHQ7w97xFQRljo=,iv:RQW7Si+Ixnep8pUS6sNfgeXaSwN+RQODLjrmPBNZjDE=,tag:JAX1wcg0u212IKZ3519bLA==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.7.1

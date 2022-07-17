@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: healthchecks
+  name: healthchecks
+  namespace: healthchecks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthchecks
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: healthchecks
+    spec:
+      containers:
+      - image: itobey/healthchecks:v2.2.1
+        imagePullPolicy: Always
+        name: healthchecks
+        env:
+        - name: ALLOWED_HOSTS
+          value: healthchecks.nuc.local
+        - name: DB_HOST
+          value: postgres.misc
+        - name: DB_PASSWORD
+          value: {{ .Values.postgres.password }}
+        - name: DB_USER
+          value: postgres
+        - name: EMAIL_HOST
+          value: healthchecks.nuc.local
+        - name: PING_ENDPOINT
+          value: healthchecks.nuc.local
+        #- name: TELEGRAM_BOT_NAME
+        #  value: --
+        #- name: TELEGRAM_TOKEN
+        #  value: --
+      restartPolicy: Always
