@@ -18,24 +18,34 @@ spec:
         app: healthchecks
     spec:
       containers:
-      - image: itobey/healthchecks:v2.2.1
+      - image: linuxserver/healthchecks
         imagePullPolicy: Always
         name: healthchecks
         env:
-        - name: ALLOWED_HOSTS
-          value: healthchecks.nuc.local
-        - name: DB_HOST
-          value: postgres.misc
-        - name: DB_PASSWORD
-          value: {{ .Values.postgres.password }}
-        - name: DB_USER
-          value: postgres
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: SITE_ROOT
+          value: https://healthchecks.nuc.local
+        - name: SITE_NAME
+          value: mysite
+        - name: DEFAULT_FROM_EMAIL
+          value: nevermind@itobey.dev
         - name: EMAIL_HOST
-          value: healthchecks.nuc.local
-        - name: PING_ENDPOINT
-          value: healthchecks.nuc.local
-        #- name: TELEGRAM_BOT_NAME
-        #  value: --
-        #- name: TELEGRAM_TOKEN
-        #  value: --
+          value: 192.168.0.34
+        - name: EMAIL_PORT
+          value: '2525'
+        - name: EMAIL_HOST_USER
+          value: test
+        - name: EMAIL_HOST_PASSWORD
+          value: test
+        - name: EMAIL_USE_TLS
+          value: 'False'
+        - name: SUPERUSER_EMAIL
+          value: test@itobey.dev
+        - name: SUPERUSER_PASSWORD
+          value: test
+        - name: REGENERATE_SETTINGS
+          value: 'True'
       restartPolicy: Always
