@@ -48,4 +48,11 @@ spec:
           value: test
         - name: REGENERATE_SETTINGS
           value: 'True'
+        volumeMounts:
+        - name: healthchecks-persistent-storage
+          mountPath: /config
+      volumes:
+      - name: healthchecks-persistent-storage
+        persistentVolumeClaim:
+          claimName: healthchecks-pvc
       restartPolicy: Always
