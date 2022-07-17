@@ -18,7 +18,7 @@ spec:
         app: healthchecks
     spec:
       containers:
-      - image: linuxserver/healthchecks
+      - image: linuxserver/healthchecks:2.2.1
         imagePullPolicy: Always
         name: healthchecks
         env:
@@ -29,23 +29,11 @@ spec:
         - name: SITE_ROOT
           value: https://healthchecks.nuc.local
         - name: SITE_NAME
-          value: mysite
-        - name: DEFAULT_FROM_EMAIL
-          value: nevermind@itobey.dev
-        - name: EMAIL_HOST
-          value: 192.168.0.34
-        - name: EMAIL_PORT
-          value: '2525'
-        - name: EMAIL_HOST_USER
-          value: test
-        - name: EMAIL_HOST_PASSWORD
-          value: test
-        - name: EMAIL_USE_TLS
-          value: 'False'
+          value: healthchecks
         - name: SUPERUSER_EMAIL
-          value: test@itobey.dev
+          value: healthchecks@itobey.dev
         - name: SUPERUSER_PASSWORD
-          value: test
+          value: "{{ .Values.admin.password }}"
         - name: REGENERATE_SETTINGS
           value: 'True'
         - name: DEBUG
