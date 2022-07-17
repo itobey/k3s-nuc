@@ -48,6 +48,8 @@ spec:
           value: test
         - name: REGENERATE_SETTINGS
           value: 'True'
+        - name: DEBUG
+          value: 'False'
         volumeMounts:
         - name: healthchecks-persistent-storage
           mountPath: /config
