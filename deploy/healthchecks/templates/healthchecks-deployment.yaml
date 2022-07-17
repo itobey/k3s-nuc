@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: healthchecks
+  name: healthchecks
+  namespace: healthchecks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: healthchecks
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: healthchecks
+    spec:
+      containers:
+      - image: linuxserver/healthchecks:2.2.1
+        imagePullPolicy: Always
+        name: healthchecks
+        env:
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: SITE_ROOT
+          value: https://healthchecks.nuc.local
+        - name: SITE_NAME
+          value: healthchecks
+        - name: SUPERUSER_EMAIL
+          value: healthchecks@itobey.dev
+        - name: SUPERUSER_PASSWORD
+          value: "{{ .Values.admin.password }}"
+        - name: REGENERATE_SETTINGS
+          value: 'True'
+        - name: DEBUG
+          value: 'False'
+        volumeMounts:
+        - name: healthchecks-persistent-storage
+          mountPath: /config
+      volumes:
+      - name: healthchecks-persistent-storage
+        persistentVolumeClaim:
+          claimName: healthchecks-pvc
+      restartPolicy: Always

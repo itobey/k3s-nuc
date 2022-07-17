@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: healthchecks
+  namespace: healthchecks
+spec:
+  rules:
+  - host: healthchecks.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: healthchecks
+            port:
+              number: 8000
+        path: /
+        pathType: ImplementationSpecific
