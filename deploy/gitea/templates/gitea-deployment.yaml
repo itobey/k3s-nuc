@@ -18,7 +18,7 @@ spec:
         app: gitea
     spec:
       containers:
-      - image: gitea/gitea:1.16.8
+      - image: gitea/gitea:1.17.0
         imagePullPolicy: IfNotPresent
         name: gitea
         env:
