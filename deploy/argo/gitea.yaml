@@ -7,10 +7,11 @@ spec:
   project: default
   source:
     repoURL: https://github.com/itobey/k3s-nuc.git 
-    targetRevision: HEAD
+    targetRevision: feature/helm-gitea
     path: deploy/gitea
     helm:
       valueFiles:
+      - values.yaml
       - secrets.yaml
   destination:
     server: https://kubernetes.default.svc

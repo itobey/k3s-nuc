@@ -1,19 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
   name: gitea
   namespace: gitea
+  labels:
+    app.kubernetes.io/instance: gitea
 spec:
   rules:
-  - host: gitea.nuc.local
-    http:
-      paths:
-      - backend:
-          service:
-            name: gitea
-            port:
-              number: 3001
-        path: /
-        pathType: ImplementationSpecific
+    - host: gitea.nuc.local
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: gitea-http
+                port:
+                  number: 3001
+
