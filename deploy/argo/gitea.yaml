@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/itobey/k3s-nuc.git 
-    targetRevision: feature/helm-gitea
+    targetRevision: HEAD
     path: deploy/gitea
     helm:
       valueFiles:
