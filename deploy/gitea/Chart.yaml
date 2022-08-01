@@ -1,3 +1,15 @@
-apiVersion: "v2"
-name: "gitea"
-version: 1
+apiVersion: v2
+appVersion: 1.16.8
+dependencies:
+- name: gitea
+  repository: https://dl.gitea.io/charts 
+  version: 5.0.9
+description: Gitea Helm chart for Kubernetes
+icon: https://docs.gitea.io/images/gitea.png
+name: gitea-umbrella
+sources:
+- https://gitea.com/gitea/helm-chart
+- https://github.com/go-gitea/gitea
+- https://hub.docker.com/r/gitea/gitea/
+type: application
+version: 1.0
