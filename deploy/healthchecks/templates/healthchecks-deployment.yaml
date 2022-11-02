@@ -18,7 +18,7 @@ spec:
         app: healthchecks
     spec:
       containers:
-      - image: linuxserver/healthchecks:2.2.1
+      - image: linuxserver/healthchecks:2.4.1
         imagePullPolicy: Always
         name: healthchecks
         env:
