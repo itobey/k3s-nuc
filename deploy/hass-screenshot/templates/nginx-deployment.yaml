@@ -18,7 +18,7 @@ spec:
         app: hass-screenshot-nginx
     spec:
       containers:
-      - image: nginx:1.21.6
+      - image: nginx:1.23.2
         imagePullPolicy: IfNotPresent
         name: hass-screenshot-nginx
         env:
