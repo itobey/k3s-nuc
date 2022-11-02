@@ -20,7 +20,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: grafana/grafana:8.4.5
+      - image: grafana/grafana:9.2.3
         imagePullPolicy: IfNotPresent
         name: grafana
         env:
