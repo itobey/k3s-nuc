@@ -3,7 +3,7 @@ appVersion: 1.16.8
 dependencies:
 - name: gitea
   repository: https://dl.gitea.io/charts 
-  version: 5.0.9
+  version: 6.0.3
 description: Gitea Helm chart for Kubernetes
 icon: https://docs.gitea.io/images/gitea.png
 name: gitea-umbrella
