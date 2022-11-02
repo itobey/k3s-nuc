@@ -18,7 +18,7 @@ spec:
         app: influxdb
     spec:
       containers:
-      - image: influxdb:1.8.10
+      - image: influxdb:2.5.0
         imagePullPolicy: IfNotPresent
         name: influxdb
         env:
