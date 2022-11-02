@@ -16,3 +16,10 @@ gitea:
     enabled: false
   mariadb:
     enabled: false
+  gitea:
+    config:
+      server:
+        ROOT_URL: https://gitea.nuc.local/
+        DOMAIN: gitea.nuc.local
+        PROTOCOL: https
+        SSH_DOMAIN: gitea.nuc.local
