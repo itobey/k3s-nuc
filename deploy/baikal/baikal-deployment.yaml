@@ -28,17 +28,11 @@ spec:
         - containerPort: 80
           name: baikal
         volumeMounts:
-        - name: baikal-config-ha
-          mountPath: /var/www/baikal/vendor/sabre/dav/lib/CalDAV/Plugin.php
-          subPath: Plugin.php
         - name: baikal-config
           mountPath: /var/www/baikal/config
         - name: baikal-data
           mountPath: /var/www/baikal/Specific
       volumes:
-      - name: baikal-config-ha
-        configMap:
-          name: baikal-config-ha-fix
       - name: baikal-config
         persistentVolumeClaim:
           claimName: baikal-config-pvc
