@@ -256,7 +256,7 @@ initChownData:
   ##
   image:
     repository: busybox
-    tag: "1.35.0"
+    tag: "1.36.0"
     sha: ""
     pullPolicy: IfNotPresent
 
