@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  application.yml: |
+    spring:
+      datasource:
+        url: jdbc:postgresql://postgres.misc:5432/postgres
+        username: postgres
+        password: "{{ .Values.postgres.password }}"
+    logging:
+      level:
+        root: INFO
+kind: ConfigMap
+metadata:
+  name: stuff-control-config
+  namespace: stuff-control
