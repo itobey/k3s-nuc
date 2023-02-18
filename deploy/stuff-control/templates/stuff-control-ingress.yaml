@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: stuff-control
+  namespace: stuff-control
+spec:
+  rules:
+  - host: stuff-control.nuc.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: stuff-control
+            port:
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific
