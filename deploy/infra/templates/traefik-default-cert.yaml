@@ -5,4 +5,4 @@ metadata:
   namespace: kube-system
 spec:
   defaultCertificate:
-    secretName: self-signed-default-cert
+    secretName: wildcard-secret
