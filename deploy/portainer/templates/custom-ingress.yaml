@@ -7,7 +7,7 @@ metadata:
   namespace: portainer
 spec:
   rules:
-  - host: portainer.nuc.local
+  - host: portainer.nuc.one
     http:
       paths:
       - backend:

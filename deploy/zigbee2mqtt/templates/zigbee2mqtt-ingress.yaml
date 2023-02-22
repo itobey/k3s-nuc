@@ -7,7 +7,7 @@ metadata:
   namespace: zigbee2mqtt
 spec:
   rules:
-  - host: zigbee2mqtt.nuc.local
+  - host: zigbee2mqtt.nuc.one
     http:
       paths:
       - backend:

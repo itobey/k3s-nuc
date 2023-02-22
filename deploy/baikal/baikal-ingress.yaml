@@ -7,7 +7,7 @@ metadata:
   namespace: baikal
 spec:
   rules:
-  - host: baikal.nuc.local
+  - host: baikal.nuc.one
     http:
       paths:
       - backend:
