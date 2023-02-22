@@ -21,7 +21,7 @@ spec:
       hostAliases:
       - ip: "192.168.0.34"
         hostnames:
-        - "grafana.nuc.local"
+        - "grafana.nuc.one"
       containers:
       - image: ghcr.io/itobey/hass-lovelace-screenshotter/hass-lovelace-kindle-screensaver:1.0.4
         imagePullPolicy: Always

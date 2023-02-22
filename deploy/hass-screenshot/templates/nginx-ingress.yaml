@@ -5,7 +5,7 @@ metadata:
   namespace: hass-screenshot
 spec:
   rules:
-  - host: hass-screenshot-nginx.nuc.local
+  - host: hass-screenshot-nginx.nuc.one
     http:
       paths:
       - backend:

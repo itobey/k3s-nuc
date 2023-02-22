@@ -27,7 +27,7 @@ spec:
         - name: PGID
           value: '1000'
         - name: SITE_ROOT
-          value: https://healthchecks.nuc.local
+          value: https://healthchecks.nuc.one
         - name: SITE_NAME
           value: healthchecks
         - name: SUPERUSER_EMAIL

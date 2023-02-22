@@ -7,7 +7,7 @@ metadata:
   namespace: node-red
 spec:
   rules:
-  - host: node-red.nuc.local
+  - host: node-red.nuc.one
     http:
       paths:
       - backend:

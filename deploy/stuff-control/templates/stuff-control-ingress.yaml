@@ -7,7 +7,7 @@ metadata:
   namespace: stuff-control
 spec:
   rules:
-  - host: stuff-control.nuc.local
+  - host: stuff-control.nuc.one
     http:
       paths:
       - backend:

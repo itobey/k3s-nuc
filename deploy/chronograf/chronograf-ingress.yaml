@@ -7,7 +7,7 @@ metadata:
   namespace: chronograf
 spec:
   rules:
-  - host: chronograf.nuc.local
+  - host: chronograf.nuc.one
     http:
       paths:
       - backend:

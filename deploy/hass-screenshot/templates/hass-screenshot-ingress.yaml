@@ -7,7 +7,7 @@ metadata:
   namespace: hass-screenshot
 spec:
   rules:
-  - host: hass-screenshot.nuc.local
+  - host: hass-screenshot.nuc.one
     http:
       paths:
       - backend:

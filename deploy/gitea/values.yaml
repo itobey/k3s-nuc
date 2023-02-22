@@ -19,7 +19,7 @@ gitea:
   gitea:
     config:
       server:
-        ROOT_URL: http://gitea.nuc.local/
-        DOMAIN: gitea.nuc.local
+        ROOT_URL: http://gitea.nuc.one/
+        DOMAIN: gitea.nuc.one
         PROTOCOL: http
-        SSH_DOMAIN: gitea.nuc.local
+        SSH_DOMAIN: gitea.nuc.one

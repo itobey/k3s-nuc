@@ -1,0 +1,14 @@
+apiVersion: v2
+appVersion: 1.11.0
+dependencies:
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: 1.11.0
+description: Cert-Manager Helm chart for Kubernetes
+home: https://github.com/cert-manager/cert-manager
+icon: https://raw.githubusercontent.com/cert-manager/cert-manager/d53c0b9270f8cd90d908460d69502694e1838f5f/logo/logo-small.png
+name: cert-manager-umbrella
+sources:
+- https://github.com/cert-manager/cert-manager
+type: application
+version: 1.0
