@@ -28,3 +28,12 @@ gitea:
         DOMAIN: gitea.nuc.one
         PROTOCOL: http
         SSH_DOMAIN: gitea.nuc.one
+      session:
+        PROVIDER: db
+      cache:
+        ADAPTER: memory
+      queue:
+        TYPE: level
+      indexer:
+        ISSUE_INDEXER_TYPE: bleve
+        REPO_INDEXER_ENABLED: true
