@@ -5,6 +5,7 @@ gitea:
   ingress:
     enabled: false
   persistence:
+    enabled: true
     existingClaim: gitea-pvc
   memcached:
     enabled: false
@@ -12,12 +13,18 @@ gitea:
     enabled: true
     persistence:
       existingClaim: gitea-db-pvc
+  postgresql-ha:
+    enabled: false
   mysql:
     enabled: false
   mariadb:
     enabled: false
+  redis-cluster:
+    enabled: false
   gitea:
     config:
+      database:
+        DB_TYPE: postgres
       server:
         ROOT_URL: http://gitea.nuc.one/
         DOMAIN: gitea.nuc.one
