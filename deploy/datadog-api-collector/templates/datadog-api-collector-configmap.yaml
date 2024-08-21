@@ -1,10 +1,10 @@
 apiVersion: v1
 data:
   application.yml: |
-    micronaut:
+    spring:
       application:
         name: datadogApi
-    datadog-api-gatherer:
+    collector:
       nuc-max-ram: 15597
       itobey-max-ram: 7772
       odroid-max-ram: 3712

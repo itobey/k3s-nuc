@@ -18,12 +18,12 @@ spec:
         app: fddb-exporter
     spec:
       containers:
-      - image: ghcr.io/itobey/fddb-exporter/fddb-exporter:0.2.1
+      - image: ghcr.io/itobey/fddb-exporter/fddb-exporter:0.3
         imagePullPolicy: Always
         name: fddb-exporter
         env:
-        - name: MICRONAUT_CONFIG_FILES
-          value: /fddb-exporter/application.yml
+        - name: SPRING_CONFIG_ADDITIONAL-LOCATION
+          value: file:/fddb-exporter/application.yml
         volumeMounts:
         - name: config-volume
           mountPath: /fddb-exporter/application.yml
