@@ -1,0 +1,15 @@
+apiVersion: v2
+appVersion: 4.4.13
+# necessary to use MongoDB 4.4.13 because my NUC cannot do AVX instructions
+# as the archived full yaml is quite large I downloaded the tar.gz
+#dependencies:
+#- name: mongodb
+#  repository: https://raw.githubusercontent.com/bitnami/charts/archive-full-index/bitnami
+#  version: 11.2.0
+description: MongoDB Helm chart for Kubernetes
+icon: https://bitnami.com/assets/stacks/mongodb/img/mongodb-stack-220x234.png
+name: mongodb-umbrella
+sources:
+- https://github.com/bitnami/charts/tree/main/bitnami/mongodb
+type: application
+version: 11.2.0
