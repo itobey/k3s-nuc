@@ -1,2 +1,3 @@
 datadog:
   site:  datadoghq.eu
+  apiKeyExistingSecret: datadog-secret

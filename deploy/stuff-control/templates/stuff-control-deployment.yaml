@@ -18,18 +18,12 @@ spec:
         app: stuff-control
     spec:
       containers:
-      - image: itobey/stuff-control-service:0.0.1
-        imagePullPolicy: Always
+      - image: ghcr.io/itobey/stuff-control-service/stuff-control-service:0.0.2
+        imagePullPolicy: IfNotPresent
         name: stuff-control
-        env:
-        - name: SPRING_CONFIG_ADDITIONAL-LOCATION
-          value: /stuff-control/
-        volumeMounts:
-        - name: config-volume
-          mountPath: /stuff-control/application.yml
-          subPath: application.yml
-      volumes:
-      - name: config-volume
-        configMap:
-          name: stuff-control-config
+        envFrom:
+        - secretRef:
+            name: stuff-control-secret
       restartPolicy: Always
+      imagePullSecrets:
+      - name: ghcr-pull-secret

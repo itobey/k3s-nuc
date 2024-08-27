@@ -22,6 +22,9 @@ spec:
         envFrom:
         - configMapRef:
             name: wireguard-configmap
+        envFrom:
+        - secretRef:
+            name: wireguard-secret
         securityContext:
           capabilities:
             add:

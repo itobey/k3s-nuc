@@ -18,30 +18,13 @@ spec:
         app: datadog-api-collector
     spec:
       containers:
-      - image: ghcr.io/itobey/datadog-api-collector/datadog-api-collector:0.2
-        imagePullPolicy: Always
+      - image: ghcr.io/itobey/datadog-api-collector/datadog-api-collector:0.2.1
+        imagePullPolicy: IfNotPresent
         name: datadog-api-collector
+        envFrom:
+        - secretRef:
+            name: datadog-api-collector-secret
         env:
-        - name: SPRING_CONFIG_ADDITIONAL-LOCATION
-          value: file:/datadog-api-collector/application.yml
         - name: DD_SITE
           value: datadoghq.eu
-        - name: DD_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: datadog-api-collector-secret
-              key: apikey
-        - name: DD_APP_KEY
-          valueFrom:
-            secretKeyRef:
-              name: datadog-api-collector-secret
-              key: appkey
-        volumeMounts:
-        - name: config-volume
-          mountPath: /datadog-api-collector/application.yml
-          subPath: application.yml
-      volumes:
-      - name: config-volume
-        configMap:
-          name: datadog-api-collector-config
       restartPolicy: Always
