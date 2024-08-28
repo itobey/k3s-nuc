@@ -1,0 +1,40 @@
+mongodb:
+  architecture: standalone
+
+  replicaCount: 1
+
+  auth:
+    usernames:
+    - fddb
+    databases:
+    - fddb
+    existingSecret: mongodb-auth-secret
+
+  arbiter:
+    enabled: false
+
+  persistence:
+    existingClaim: mongodb-pvc
+
+  service:
+    type: NodePort
+    #externalTrafficPolicy: Cluster
+
+  externalAccess:
+    enabled: false
+
+  pdb:
+    create: false
+
+  rbac:
+    create: false
+
+  serviceAccount:
+    create: false
+
+  networkPolicy:
+    enabled: false
+
+# unfortunately necessary, as the readiness probe fails all the time because the command to grep is too slow to return true
+  readinessProbe:
+    enabled: false
