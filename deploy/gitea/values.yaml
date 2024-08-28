@@ -20,6 +20,8 @@ gitea:
   redis-cluster:
     enabled: false
   gitea:
+    admin:
+      existingSecret: gitea-admin-secret
     config:
       database:
         DB_TYPE: postgres

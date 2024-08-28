@@ -9,9 +9,6 @@ spec:
     repoURL: https://github.com/itobey/k3s-nuc.git 
     targetRevision: HEAD
     path: deploy/telegraf-fritzbox
-    helm:
-      valueFiles:
-      - secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: telegraf-fritzbox

@@ -32,12 +32,13 @@ spec:
           value: healthchecks
         - name: SUPERUSER_EMAIL
           value: healthchecks@itobey.dev
-        - name: SUPERUSER_PASSWORD
-          value: "{{ .Values.admin.password }}"
         - name: REGENERATE_SETTINGS
           value: 'True'
         - name: DEBUG
           value: 'False'
+        envFrom:
+        - secretRef:
+            name: healthchecks
         volumeMounts:
         - name: healthchecks-persistent-storage
           mountPath: /config

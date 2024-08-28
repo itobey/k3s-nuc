@@ -13,7 +13,6 @@ spec:
       valueFiles:
       - values.yaml
       - values-custom.yaml
-      - secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: datadog
