@@ -1,0 +1,53 @@
+fddb-exporter:
+  image:
+    repository: ghcr.io/itobey/fddb-exporter/fddb-exporter
+    tag: "1.2.0"
+    pullPolicy: IfNotPresent
+
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    name: "fddb-exporter"
+
+  ingress:
+    enabled: true
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+    hosts:
+      - host: fddb-exporter.nuc.one
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  probes:
+    liveness:
+      enabled: true
+      path: /actuator/health/liveness
+      port: http
+      initialDelaySeconds: 25
+      periodSeconds: 600
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readiness:
+      enabled: true
+      path: /actuator/health/readiness
+      port: http
+      initialDelaySeconds: 20
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+
+  mongodb:
+    host: "mongodb.mongodb"
+    port: "27017"
+    database: "fddb"
+    username: "fddb"
+
+  fddb:
+    auth:
+      secretRef:
+        name: fddb-exporter-secret
