@@ -1,8 +1,18 @@
 {
-  "kubernetes": {
-    "fileMatch": ["\\.yaml$"]
-  },
-  "ignorePaths": [
-    "deploy/datadog"    
+  "extends": [
+    "config:base"
+  ],
+  "path": [
+    "deploy/**"
+  ],
+  "helm": {
+    "fileMatch": [
+      "(^|/)Chart\\.ya?ml$"
     ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "\\.ya?ml$"
+    ]
+  }
 }
