@@ -1,7 +1,7 @@
 fddb-exporter:
   image:
     repository: ghcr.io/itobey/fddb-exporter/fddb-exporter
-    tag: "1.2.0"
+    tag: "1.2.1"
     pullPolicy: IfNotPresent
 
   nameOverride: ""
