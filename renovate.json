@@ -2,17 +2,15 @@
   "extends": [
     "config:base"
   ],
-  "path": [
-    "deploy/**"
-  ],
-  "helm": {
-    "fileMatch": [
-      "(^|/)Chart\\.ya?ml$"
-    ]
-  },
-  "kubernetes": {
-    "fileMatch": [
-      "\\.ya?ml$"
-    ]
-  }
+  "packageRules": [
+    {
+      "matchPaths": ["deploy/**/Chart.yaml"],
+      "managers": ["helm"]
+    },
+    {
+      "matchPaths": ["deploy/**/*.yaml"],
+      "managers": ["regex"],
+      "extractVersion": "^version:\\s*(?<version>\\S+)$"
+    }
+  ]
 }
