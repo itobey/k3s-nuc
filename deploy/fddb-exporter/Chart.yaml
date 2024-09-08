@@ -1,4 +1,4 @@
-piVersion: "v2"
+apiVersion: "v2"
 name: "fddb-exporter-umbrella"
 version: 1
 dependencies:

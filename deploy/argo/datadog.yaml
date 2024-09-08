@@ -9,10 +9,6 @@ spec:
     repoURL: https://github.com/itobey/k3s-nuc.git 
     targetRevision: HEAD
     path: deploy/datadog
-    helm:
-      valueFiles:
-      - values.yaml
-      - values-custom.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: datadog
