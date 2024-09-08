@@ -38,3 +38,10 @@ mongodb:
 # unfortunately necessary, as the readiness probe fails all the time because the command to grep is too slow to return true
   readinessProbe:
     enabled: false
+# unfortunately necessary, as the liveness probe results in very high cpu load. with cpu limits it crashes the pod
+  livenessProbe:
+    enabled: false
+
+  resources:
+    limits:
+      cpu: 200m
