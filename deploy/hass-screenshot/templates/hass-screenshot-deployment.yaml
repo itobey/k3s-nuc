@@ -23,8 +23,8 @@ spec:
         hostnames:
         - "grafana.nuc.one"
       containers:
-      - image: ghcr.io/itobey/hass-lovelace-screenshotter/hass-lovelace-kindle-screensaver:1.0.4
-        imagePullPolicy: Always
+      - image: sibbl/hass-lovelace-kindle-screensaver:1.0.12
+        imagePullPolicy: IfNotPresent
         name: hass-screenshot
         env:
         - name: TZ
@@ -46,12 +46,14 @@ spec:
         - name: CRON_JOB
           value: "*/20 * * * *"
         - name: OUTPUT_PATH
-          value: /output/output.jpg
+          value: /output/output
         # for Grafana iframes
         - name: UNSAFE_IGNORE_CERTIFICATE_ERRORS
           value: "true"
         - name: COLOR_MODE
           value: "TrueColor"
+        - name: IMAGE_FORMAT
+          value: jpeg
         envFrom:
         - secretRef:
             name: hass-screenshot
