@@ -40,9 +40,9 @@ spec:
             enabled: true
             ingressClassName: traefik
             hosts:
-              - grafana.itobey.dev
+              - grafana-prometheus.nuc.one
             annotations:
-              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+              traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
 
           # Configurations
           adminUser: admin
@@ -106,13 +106,13 @@ spec:
             enabled: true
             ingressClassName: traefik
             hosts:
-              - prometheus.itobey.dev
+              - prometheus.nuc.one
             annotations:
-              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+              traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
 
           # Configurations
           prometheusSpec:
-            externalUrl: http://prometheus.itobey.dev
+            externalUrl: http://prometheus.nuc.one
             retention: "30d" # keep metrics for 30 days
 
             # additional config for my Kasa power plugs
@@ -205,13 +205,13 @@ spec:
             enabled: true
             ingressClassName: traefik
             hosts:
-              - alertmanager.itobey.dev
+              - alertmanager.nuc.one
             annotations:
-              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+              traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
 
           # Configurations
           alertmanagerSpec:
-            externalUrl: http://alertmanager.itobey.dev
+            externalUrl: http://alertmanager.nuc.one
             retention: "720h" # 30 days
 
             storage:
