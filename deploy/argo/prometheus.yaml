@@ -3,18 +3,326 @@ kind: Application
 metadata:
   name: prometheus
   namespace: argocd
+
 spec:
   project: default
-  source:
-    repoURL: https://github.com/itobey/k3s-nuc.git 
-    targetRevision: HEAD
-    path: deploy/prometheus
-    helm:
-      valueFiles:
-      - custom-values.yaml
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: prometheus
   syncPolicy:
-    syncOptions: 
-    - CreateNamespace=true 
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: prometheus
+  source:
+    chart: kube-prometheus-stack
+    repoURL: "https://prometheus-community.github.io/helm-charts"
+    targetRevision: 62.7.0
+
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+    helm:
+      skipCrds: false
+      valuesObject:
+        fullnameOverride: "kube-prometheus-stack"
+
+        ## Grafana ##
+        grafana:
+          fullnameOverride: grafana
+          image:
+            tag: 11.2.0
+
+          serviceMonitor:
+            enabled: true
+            labels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          # Ingress
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - grafana.itobey.dev
+            annotations:
+              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+
+          # Configurations
+          adminUser: admin
+          adminPassword: password
+          grafana.ini:
+            feature_toggles: # traceQLStreaming lokiExperimentalStreaming
+              enable: panelTitleSearch nestedFolders  storage traceToMetrics lokiQuerySplittingConfig lokiFormatQuery metricsSummary featureToggleAdminPage enableNativeHTTPHistogram prometheusPromQAIL logsInfiniteScrolling enablePluginsTracingByDefault scenes extraThemes dashgpt
+
+          # Dashboards
+          defaultDashboardsTimezone: browser
+          dashboardProviders:
+            dashboardproviders.yaml:
+              apiVersion: 1
+              providers:
+                - name: 'grafana-dashboards-kubernetes'
+                  orgId: 1
+                  folder: 'Kubernetes-v2'
+                  type: file
+                  options:
+                    path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+          dashboards:
+            grafana-dashboards-kubernetes:
+              k8s-views-global:
+                url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+              k8s-views-namespaces:
+                url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+              k8s-views-nodes:
+                url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+              k8s-views-pods:
+                url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+
+          # Sidecar configurations (used to inject dashboard via configmap)
+          sidecar:
+            dashboards:
+              # Allow dashboards to be consolidated into folders for proper visualisation in Grafana.
+              folderAnnotation: grafana_folder
+              provider:
+                foldersFromFilesStructure: true
+              label: grafana_dashboard
+              labelValue: kube-prometheus-stack
+              # Puts kube-prometheus-stack default dashboards in 'Kubernetes' folder
+              annotations:
+                grafana_folder: /tmp/dashboards/Kubernetes
+
+            datasources:
+              exemplarTraceIdDestinations:
+                datasourceUid: tempo
+                traceIdLabelName: trace_id
+
+        ## Prometheus ##
+        prometheus:
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          podDisruptionBudget:
+            enabled: true
+
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - prometheus.itobey.dev
+            annotations:
+              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+
+          # Configurations
+          prometheusSpec:
+            externalUrl: http://prometheus.itobey.dev
+            retention: "30d" # keep metrics for 30 days
+
+            # additional config for my Kasa power plugs
+            additionalScrapeConfigs:
+              - job_name: 'kasa'
+                static_configs:
+                  - targets:
+                      # IP of your smart plugs
+                      - 192.168.0.51
+                      - 192.168.0.52
+                      - 192.168.0.58
+                metrics_path: /scrape
+                relabel_configs:
+                  - source_labels: [ __address__ ]
+                    target_label: __param_target
+                  - source_labels: [ __param_target ]
+                    target_label: instance
+                  - target_label: __address__
+                    # IP of the exporter
+                    replacement: kasa.kasa:9233
+              - job_name: 'kasa_exporter'
+                static_configs:
+                  - targets:
+                      - kasa.kasa:9233
+
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  # storageClassName: standard-rwo
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+
+
+            # Necessary if using Otel collector.
+            enableRemoteWriteReceiver: true # /api/v1/otlp
+            # https://prometheus.io/docs/prometheus/latest/feature_flags/
+            enableFeatures:
+              - exemplar-storage # enable traces in metrics.
+              - memory-snapshot-on-shutdown
+              - otlp-write-receiver # allow to write otel metrics to /api/v1/otlp
+
+            ## Prometheus CRD Selectors ##
+            ruleSelectorNilUsesHelmValues: false
+            ruleSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            podMonitorNamespaceSelector: false
+            podMonitorSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            probeSelectorNilUsesHelmValues: false
+            probeSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            scrapeConfigSelectorNilUsesHelmValues: false
+            scrapeConfigSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            alertmanagerConfigSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+        prometheusOperator:
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        ## Alertmanager ##
+        alertmanager:
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            hosts:
+              - alertmanager.itobey.dev
+            annotations:
+              traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+
+          # Configurations
+          alertmanagerSpec:
+            externalUrl: http://alertmanager.itobey.dev
+            retention: "720h" # 30 days
+
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  # update if you want a better storage class.
+                  # storageClassName: standard-rwo
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+          # https://prometheus.io/docs/alerting/latest/configuration/#configuration
+          config:
+            # Try your configuration with https://prometheus.io/webtools/alerting/routing-tree-editor/
+            route:
+              receiver: 'slack' # default receiver
+              routes:
+                # Ensure alerting pipeline is functional
+                - receiver: 'null'
+                  matchers:
+                    - alertname = "Watchdog"
+                # Redirect all severity to slack
+                - receiver: 'slack'
+                  matchers:
+                    - severity =~ info|critical|warning
+
+        # type: Daemonset -> collects metrics from the host system
+        nodeExporter:
+          enabled: true
+        prometheus-node-exporter:
+          fullnameOverride: prometheus-node-exporter
+
+          prometheus:
+            monitor:
+              enabled: true
+              additionalLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+        # type: Deployment -> Listens to the Kubernetes API server and generates metrics about the state of the objects such as deployments, nodes and pods.
+        kubeStateMetrics:
+          enabled: true
+        kube-state-metrics:
+          fullnameOverride: kube-state-metrics
+
+          prometheus:
+            monitor:
+              enabled: true
+              additionalLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+
+        ## Node component: https://kubernetes.io/docs/concepts/overview/components/#node-components ##
+
+        # Manage deployment of pods to Kubernetes nodes. It receives commands from the API server and instructs the container runtime to start/stop containers
+        # It pulls node, pod, and container metrics
+        kubelet:
+          # k3s: sudo curl --insecure https://localhost:10250/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        # Network proxy that runs on each node that maintains the network rules.
+        # kube-proxy
+        kubeProxy:
+          enabled: false
+          serviceMonitor:
+            enabled: false
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+
+        ## Controle plane components: https://kubernetes.io/docs/concepts/overview/components/#control-plane-components ##
+        ## k3s https://docs.k3s.io/installation/requirements#inbound-rules-for-k3s-server-nodes ##
+
+        # kubernetes API
+        kubeApiServer:
+          # k3s: sudo curl --insecure https://localhost:6443/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        # Runs controller processes, helps maintain the desired state of resources and reacts to changes in the cluster, ensuring that the actual state aligns with the declared configuration.
+        kubeControllerManager:
+          # k3s: sudo curl --insecure https://localhost:10257/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        # Watches for newly created Pods with no assigned node, and selects a node for them to run on.
+        kubeScheduler:
+          # k3s: sudo curl --insecure https://localhost:10259/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        coreDns:
+          enabled: false
+        kubeDns:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+
+        defaultRules:
+          labels:
+            prometheus.io/scrap-with: kube-prometheus-stack
+
+          rules:
+            # disable components that are not exposed in controle-plane in managed environment.
+            kubeApiserverAvailability: false
+            kubeApiserverBurnrate: false
+            kubeApiserverHistogram: false
+            kubeApiserverSlos: false
+            etcd: false
+            kubeControllerManager: false
+            kubeSchedulerAlerting: false
+            kubeSchedulerRecording: false
