@@ -6,12 +6,11 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/itobey/k3s-nuc.git 
-    targetRevision: HEAD
-    path: deploy/cert-manager
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: 1.15.3
     helm:
-      valueFiles:
-      - values.yaml
+      installCRDs: true
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
