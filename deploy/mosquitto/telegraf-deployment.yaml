@@ -24,6 +24,16 @@ spec:
         env:
         - name: INFLUXDB_URL
           value: http://influxdb.influxdb:8086
+        - name: MQTT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-mosquitto-secret
+              key: username
+        - name: MQTT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: telegraf-mosquitto-secret
+              key: password
         volumeMounts:
         - name: config-volume
           mountPath: /etc/telegraf/telegraf.conf
