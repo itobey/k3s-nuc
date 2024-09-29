@@ -1,6 +1,6 @@
 datadog:
   datadog:
-    site:  datadoghq.eu
+    site: datadoghq.eu
     apiKeyExistingSecret: datadog-secret
     prometheusScrape:
       enabled: false
