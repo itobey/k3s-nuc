@@ -18,3 +18,5 @@ data:
       topics = [
     	"home/#"
       ]
+    username = "$MQTT_USERNAME"  # Reference environment variable
+    password = "$MQTT_PASSWORD"  # Reference environment variable
