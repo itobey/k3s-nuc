@@ -38,9 +38,16 @@ spec:
           subPath: data/
         - name: mosquitto-persistent-storage
           mountPath: /mosquitto/log/
-          subPath: log/		  
+          subPath: log/
+        - name: mosquitto-pws
+          mountPath: "/etc/mosquitto/password_file"
+          subPath: mosquitto-pws
+          readOnly: true
       volumes:
       - name: mosquitto-persistent-storage
         persistentVolumeClaim:
           claimName: mosquitto-pvc
+      - name: mosquitto-pws
+        secret:
+          secretName: mosquitto-pws
       restartPolicy: Always
