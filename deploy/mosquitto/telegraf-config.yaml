@@ -5,14 +5,6 @@ metadata:
   namespace: mosquitto
 data:
   telegraf.conf: |
-    [[outputs.influxdb]]
-      urls = ["http://influxdb.influxdb:8086"]
-      database = "sensors"
-      skip_database_creation = true
-    
-    #[[outputs.file]]
-    # files = ["stdout", "/tmp/metrics.out"]
-    
     [[inputs.mqtt_consumer]]
       servers = ["tcp://mosquitto.mosquitto:1883"]
       topics = [
@@ -20,3 +12,9 @@ data:
       ]
     username = "$MQTT_USERNAME"  # Reference environment variable
     password = "$MQTT_PASSWORD"  # Reference environment variable
+    
+    [[outputs.influxdb_v2]]
+      urls = ["http://influxdb2.influxdb2:8086"]
+      token = "$INFLUXDB2_TOKEN"
+      organization = "primary" 
+      bucket = "home"

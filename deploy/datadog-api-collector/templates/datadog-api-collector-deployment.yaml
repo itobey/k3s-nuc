@@ -18,7 +18,7 @@ spec:
         app: datadog-api-collector
     spec:
       containers:
-      - image: ghcr.io/itobey/datadog-api-collector:0.2.2
+      - image: ghcr.io/itobey/datadog-api-collector:0.3.0
         imagePullPolicy: IfNotPresent
         name: datadog-api-collector
         envFrom:
