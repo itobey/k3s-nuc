@@ -34,6 +34,11 @@ spec:
             secretKeyRef:
               name: telegraf-mosquitto-secret
               key: password
+        - name: INFLUXDB2_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: influxdb2-token
+              key: token
         volumeMounts:
         - name: config-volume
           mountPath: /etc/telegraf/telegraf.conf

@@ -1,0 +1,10 @@
+influxdb:
+  persistence:
+    existingClaim: influxdb2-pvc
+  auth:
+    existingSecret: influxdb2-auth-secret
+  ingress:
+    enabled: true
+    hostname: influxdb2.nuc.one
+    annotations:
+    - traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
