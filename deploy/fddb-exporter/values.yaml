@@ -1,7 +1,7 @@
 fddb-exporter:
   image:
     repository: ghcr.io/itobey/fddb-exporter
-    tag: "1.4.0"
+    tag: "1.5.0"
     pullPolicy: IfNotPresent
 
   nameOverride: ""
@@ -42,10 +42,21 @@ fddb-exporter:
       successThreshold: 1
 
   mongodb:
+    enabled: true
     host: "mongodb.mongodb"
     port: "27017"
     database: "fddb"
     username: "fddb"
+    secretRef:
+      name: mongodb-secret
+
+influxdb:
+  enabled: true
+  url: "http://influxdb2.influxdb2:8086"
+  org: "primary"
+  bucket: "fddb-exporter"
+  secretRef:
+    name: influxdb-secret
 
   fddb:
     auth:
