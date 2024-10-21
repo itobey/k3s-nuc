@@ -50,13 +50,13 @@ fddb-exporter:
     secretRef:
       name: mongodb-secret
 
-influxdb:
-  enabled: true
-  url: "http://influxdb2.influxdb2:8086"
-  org: "primary"
-  bucket: "fddb-exporter"
-  secretRef:
-    name: influxdb-secret
+  influxdb:
+    enabled: true
+    url: "http://influxdb2.influxdb2:8086"
+    org: "primary"
+    bucket: "fddb-exporter"
+    secretRef:
+      name: influxdb-secret
 
   fddb:
     auth:
