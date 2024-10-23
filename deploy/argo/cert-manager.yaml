@@ -10,7 +10,9 @@ spec:
     repoURL: https://charts.jetstack.io
     targetRevision: 1.15.3
     helm:
-      installCRDs: true
+      parameters:
+        - name: installCRDs
+          value: "true"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager

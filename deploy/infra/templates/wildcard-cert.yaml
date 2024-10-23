@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-cert
+  namespace: kube-system
+spec:
+  secretName: wildcard-secret
+  dnsNames:
+  - "*.nuc.one"
+  - nuc.one
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
