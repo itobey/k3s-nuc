@@ -447,7 +447,7 @@ addons:
     image:
       repository: codercom/code-server
       pullPolicy: IfNotPresent
-      tag: 4.2.0
+      tag: 4.96.4
 
     # Set any environment variables for code-server here
     env: {}
