@@ -7,7 +7,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   tags:
   - bitnami-common
-  version: 1.x.x
+  version: 2.x
 description: InfluxDB(TM) is an open source time-series database designed to handle
   large write and read loads in real-time.
 home: https://github.com/bitnami/charts/tree/master/bitnami/influxdb
