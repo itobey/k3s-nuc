@@ -3,5 +3,5 @@ name: "influxdb2-umbrella"
 version: 1
 dependencies:
   - name: influxdb
-    version: 6.3.21
+    version: 6.6.1
     repository: "oci://registry-1.docker.io/bitnamicharts"
