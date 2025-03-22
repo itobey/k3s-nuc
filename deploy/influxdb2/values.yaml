@@ -8,3 +8,6 @@ influxdb:
     hostname: influxdb2.nuc.one
     annotations:
     - traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  resources:
+    limits:
+      memory: 512Mi
