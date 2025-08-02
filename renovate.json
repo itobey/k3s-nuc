@@ -1,15 +1,23 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "packageRules": [
     {
-      "matchPaths": ["deploy/**/Chart.yaml"],
-      "managers": ["helm"]
+      "matchFileNames": [
+        "deploy/**/Chart.yaml"
+      ],
+      "matchManagers": [
+        "helm"
+      ]
     },
     {
-      "matchPaths": ["deploy/**/*.yaml"],
-      "managers": ["regex"],
+      "matchFileNames": [
+        "deploy/**/*.yaml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
       "extractVersion": "^version:\\s*(?<version>\\S+)$"
     }
   ]
