@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: zwave-svc
   namespace: zwave
-spec:
-  selector:
+  labels:
     app: zwave
+spec:
   ports:
     - name: http
       port: 80
@@ -13,5 +13,6 @@ spec:
     - name: websocket
       port: 3000
       targetPort: websocket
-  externalTrafficPolicy: Local
+  selector:
+    app: zwave
   type: LoadBalancer
