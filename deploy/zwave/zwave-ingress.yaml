@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: zwave
+  namespace: zwave
+spec:
+  rules:
+  - host: zwave.nuc.one
+    http:
+      paths:
+      - backend:
+          service:
+            name: zwave
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
