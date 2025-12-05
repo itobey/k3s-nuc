@@ -14,6 +14,6 @@ spec:
           service:
             name: zwave
             port:
-              number: 80
+              number: 8091
         path: /
         pathType: ImplementationSpecific

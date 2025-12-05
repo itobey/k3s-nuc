@@ -15,18 +15,6 @@ spec:
       containers:
         - name: zwave
           image: zwavejs/zwave-js-ui:11.8.2
-          livenessProbe:
-            failureThreshold: 10
-            httpGet:
-              httpHeaders:
-                - name: Accept
-                  value: text/plain
-              path: /health
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
           ports:
             - containerPort: 8091
               name: http
