@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zwave
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: zwave
+  template:
+    metadata:
+      labels:
+        name: zwave
+    spec:
+      containers:
+        - name: zwave
+          image: zwavejs/zwave-js-ui:11.8.2
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              httpHeaders:
+                - name: Accept
+                  value: text/plain
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+            - containerPort: 8091
+              name: http
+              protocol: TCP
+            - containerPort: 3000
+              name: websocket
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+          volumeMounts:
+            - mountPath: /dev/zwave
+              name: zwavestick
+            - mountPath: /usr/src/app/store
+              name: data
+      volumes:
+        - name: zwavestick
+          hostPath:
+            path: /dev/serial/by-id/usb-Nabu_Casa_ZWA-2_80B54EE15CFC-if00
+            type: CharDevice
+        - name: data
+          persistentVolumeClaim:
+            claimName: pvc-zwave
