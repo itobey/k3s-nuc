@@ -1,35 +1,25 @@
 apiVersion: v2
-appVersion: 2021.5.5
-dependencies:
-- name: common
-  repository: https://library-charts.k8s-at-home.com
-  version: 4.5.2
-- condition: postgresql.enabled
-  name: postgresql
-  repository: https://charts.bitnami.com/bitnami
-  version: 10.16.2
-- condition: mariadb.enabled
-  name: mariadb
-  repository: https://charts.bitnami.com/bitnami
-  version: 10.4.5
-- condition: influxdb.enabled
-  name: influxdb
-  repository: https://charts.bitnami.com/bitnami
-  version: 1.1.9
-description: Home Assistant
-home: https://github.com/k8s-at-home/charts/tree/master/charts/stable/home-assistant
+appVersion: 2025.12.4
+description: Automatically Updated Helm Chart for Home Assistant
+home: https://github.com/pajikos/home-assistant-helm-chart
 icon: https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Home_Assistant_Logo.svg/519px-Home_Assistant_Logo.svg.png
 keywords:
-- home-assistant
-- hass
-- homeassistant
+  - home-assistant
+  - hass
+  - homeassistant
 kubeVersion: '>=1.16.0-0'
 maintainers:
-- email: jeff@billimek.com
-  name: billimek
-name: home-assistant
+  - email: sklenar.pav@gmail.com
+    name: pajikos
+name: home-assistant-umbrella
 sources:
-- https://github.com/home-assistant/home-assistant
-- https://github.com/cdr/code-server
-- https://github.com/k8s-at-home/charts/tree/master/charts/stable/home-assistant
-version: 8.3.1
+  - https://github.com/pajikos/home-assistant-helm-chart
+  - https://github.com/cdr/code-server
+  - https://github.com/pajikos/home-assistant-helm-chart/tree/main/charts/home-assistant
+  - https://artifacthub.io/packages/helm/helm-hass/home-assistant
+type: application
+version: 0.3.36
+dependencies:
+  - name: home-assistant
+    repository: http://pajikos.github.io/home-assistant-helm-chart
+    version: 0.3.36

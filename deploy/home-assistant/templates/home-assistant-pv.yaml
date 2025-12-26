@@ -5,10 +5,11 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: home-assistant-pv
+  storageClassName: ""
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: "/media/enc/docker-volumes/home-assistant"
