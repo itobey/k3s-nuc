@@ -6,7 +6,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: home-assistant-pv
+  storageClassName: ""
+  volumeName: home-assistant-pv
   resources:
     requests:
       storage: 1Gi
