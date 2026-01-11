@@ -30,7 +30,7 @@ spec:
         - name: PAPERLESS_REDIS
           value: "redis://redis:6379"
         - name: PAPERLESS_DBHOST
-          value: "postgres.misc:5432"
+          value: "postgres.misc"
         - name: PAPERLESS_DBNAME
           value: "paperless"
         - name: PAPERLESS_DBUSER
