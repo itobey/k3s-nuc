@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis
+  name: redis
+  namespace: paperless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      tier: backend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis
+        tier: backend
+    spec:
+      containers:
+      - image: docker.io/library/redis:8
+        imagePullPolicy: IfNotPresent
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: paperless-storage
+          mountPath: /data
+          subPath: redis
+      volumes:
+      - name: paperless-storage
+        persistentVolumeClaim:
+          claimName: paperless-pvc
+      restartPolicy: Always
+

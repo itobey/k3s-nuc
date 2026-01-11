@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: paperless
+  name: paperless
+  namespace: paperless
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless
+        tier: frontend
+    spec:
+      containers:
+      - image: ghcr.io/paperless-ngx/paperless-ngx:2.20.3
+        imagePullPolicy: IfNotPresent
+        name: paperless
+        ports:
+        - containerPort: 8000
+          name: paperless
+        env:
+        - name: PAPERLESS_REDIS
+          value: "redis://redis:6379"
+        - name: PAPERLESS_DBHOST
+          value: "postgres.misc:5432"
+        - name: PAPERLESS_DBNAME
+          value: "paperless"
+        - name: PAPERLESS_DBUSER
+          value: "paperless"
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secret
+              key: PAPERLESS_DBPASS
+        - name: PAPERLESS_OCR_LANGUAGE
+          value: "deu"
+        volumeMounts:
+        - name: paperless-storage
+          mountPath: /usr/src/paperless/data
+          subPath: data
+        - name: paperless-storage
+          mountPath: /usr/src/paperless/media
+          subPath: media
+        - name: paperless-storage
+          mountPath: /usr/src/paperless/export
+          subPath: export
+        - name: paperless-storage
+          mountPath: /usr/src/paperless/consume
+          subPath: consume
+        - name: paperless-secret-vol
+          mountPath: /run/secrets/paperless
+          readOnly: true
+      volumes:
+      - name: paperless-storage
+        persistentVolumeClaim:
+          claimName: paperless-pvc
+      - name: paperless-secret-vol
+        secret:
+          secretName: paperless-secret
+      restartPolicy: Always
