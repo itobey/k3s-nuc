@@ -29,6 +29,10 @@ spec:
         env:
         - name: PAPERLESS_REDIS
           value: "redis://redis:6379"
+        - name: PAPERLESS_PORT
+          value: '8000'
+        - name: PAPERLESS_URL
+          value: https://paperless.nuc.one
         - name: PAPERLESS_DBHOST
           value: "postgres.misc"
         - name: PAPERLESS_DBNAME
