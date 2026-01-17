@@ -56,9 +56,8 @@ spec:
         - name: paperless-storage
           mountPath: /usr/src/paperless/export
           subPath: export
-        - name: paperless-storage
+        - name: paperless-input
           mountPath: /usr/src/paperless/consume
-          subPath: consume
         - name: paperless-secret-vol
           mountPath: /run/secrets/paperless
           readOnly: true
@@ -69,4 +68,7 @@ spec:
       - name: paperless-secret-vol
         secret:
           secretName: paperless-secret
+      - name: paperless-input
+        persistentVolumeClaim:
+          claimName: paperless-input-pvc
       restartPolicy: Always
