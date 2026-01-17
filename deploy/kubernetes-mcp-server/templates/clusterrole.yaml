@@ -6,6 +6,9 @@ rules:
   - apiGroups: [""]
     resources: ["pods", "services", "endpoints", "configmaps", "secrets", "events"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
   - apiGroups: ["apps"]
     resources: ["deployments", "daemonsets", "statefulsets"]
     verbs: ["get", "list", "watch", "create", "update", "patch"]
@@ -15,4 +18,3 @@ rules:
   - apiGroups: ["mcp.containers", "mcp.k8s.io"]
     resources: ["*"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
