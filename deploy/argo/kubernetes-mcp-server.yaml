@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubernetes-mcp-server
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/itobey/k3s-nuc.git
+    targetRevision: HEAD
+    path: deploy/kubernetes-mcp-server
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubernetes-mcp-server
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

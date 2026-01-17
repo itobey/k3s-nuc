@@ -1,0 +1,4 @@
+kubernetes-mcp-server:
+  ingress:
+    enabled: true
+    host: "kubernetes-mcp.nuc.one"
