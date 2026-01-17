@@ -2,3 +2,15 @@ kubernetes-mcp-server:
   ingress:
     enabled: true
     host: "kubernetes-mcp.nuc.one"
+
+  serviceAccount:
+    create: true
+    name: kubernetes-mcp-server
+
+  rbac:
+    create: true
+    extraClusterRoleBindings:
+      - name: kubernetes-mcp-server-use-edit
+        roleRef:
+          name: edit
+          external: true
