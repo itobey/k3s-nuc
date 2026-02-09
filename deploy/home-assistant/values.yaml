@@ -4,7 +4,7 @@ home-assistant:
     type: Deployment
 
   image:
-    tag: "2025.8"
+    tag: "2026.2"
 
   env:
     - name: TZ
