@@ -1,0 +1,15 @@
+n8n:
+  fullnameOverride: "n8n"
+
+  timezone: "Europe/Berlin"
+
+  redis:
+    enabled: false
+
+  ingress:
+    enabled: false
+
+  main:
+    persistence:
+      enabled: true
+      existingClaim: "n8n-pvc"

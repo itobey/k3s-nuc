@@ -1,0 +1,10 @@
+apiVersion: v2
+name: n8n-umbrella
+description: n8n Helm chart for Kubernetes
+type: application
+version: 1.0
+appVersion: 2.8.3
+dependencies:
+  - name: n8n
+    repository: https://community-charts.github.io/helm-charts
+    version: 1.16.29
