@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: searxng-config
+  namespace: searxng
+data:
+  settings.yml: |
+    use_default_settings: true
+    server:
+      # Generate a strong secret key, e.g.: openssl rand -hex 32
+      secret_key: "ce7d1ca72a177d16ae52501b8ae7cd932b4a44a24fef095d7e0ffee25e80b254"
+      limiter: false
+      base_url: "https://searxng.nuc.one/"
+      bind_address: "0.0.0.0:8080"
+    search:
+      safe_search: 0
+      autocomplete: ""
+      default_lang: ""

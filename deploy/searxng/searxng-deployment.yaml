@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: searxng
+  name: searxng
+  namespace: searxng
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searxng
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: searxng
+    spec:
+      containers:
+      - image: docker.io/searxng/searxng:latest
+        imagePullPolicy: IfNotPresent
+        name: searxng
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: SEARXNG_BASE_URL
+          value: "https://searxng.nuc.one/"
+        volumeMounts:
+        - name: searxng-config
+          mountPath: /etc/searxng/settings.yml
+          subPath: settings.yml
+          readOnly: true
+        - name: searxng-cache
+          mountPath: /var/cache/searxng
+      volumes:
+      - name: searxng-config
+        configMap:
+          name: searxng-config
+      - name: searxng-cache
+        emptyDir: {}
+      restartPolicy: Always

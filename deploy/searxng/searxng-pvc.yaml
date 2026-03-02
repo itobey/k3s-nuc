@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: searxng-pvc
+  namespace: searxng
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: searxng-pv
+  resources:
+    requests:
+      storage: 1Gi

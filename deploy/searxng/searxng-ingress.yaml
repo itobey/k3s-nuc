@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+  name: searxng
+  namespace: searxng
+spec:
+  rules:
+  - host: searxng.nuc.one
+    http:
+      paths:
+      - backend:
+          service:
+            name: searxng
+            port:
+              number: 8080
+        path: /
+        pathType: ImplementationSpecific
