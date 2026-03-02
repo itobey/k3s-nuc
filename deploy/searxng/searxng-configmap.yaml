@@ -13,6 +13,9 @@ data:
       base_url: "https://searxng.nuc.one/"
       bind_address: "0.0.0.0:8080"
     search:
+      formats:
+        - html
+        - json
       safe_search: 0
       autocomplete: ""
       default_lang: ""
