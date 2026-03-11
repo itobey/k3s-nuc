@@ -22,3 +22,7 @@ n8n:
     volumeMounts:
       - name: n8n-input
         mountPath: /data/n8n-input
+    
+    extraEnvVars:
+      - name: N8N_RESTRICT_FILE_ACCESS_TO
+        value: /data/n8n-input
