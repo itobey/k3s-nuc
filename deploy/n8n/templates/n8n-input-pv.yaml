@@ -11,4 +11,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/media/enc/docker-volumes/resilio-data/folders/tobi_handy_sync_folder/_aiserver"
+    path: "/media/enc/docker-volumes/resilio-data/folders/tobi_handy_sync_folder/_n8n"
