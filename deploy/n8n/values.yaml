@@ -13,3 +13,12 @@ n8n:
     persistence:
       enabled: true
       existingClaim: "n8n-pvc"
+    
+    extraVolumes:
+      - name: n8n-input
+        persistentVolumeClaim:
+          claimName: n8n-input-pvc
+    
+    extraVolumeMounts:
+      - name: n8n-input
+        mountPath: /data/n8n-input
