@@ -18,8 +18,8 @@ spec:
         app: stuff-control
     spec:
       containers:
-      - image: ghcr.io/itobey/stuff-control-service:0.0.8
-        imagePullPolicy: IfNotPresent
+      - image: ghcr.io/itobey/stuff-control-service:latest
+        imagePullPolicy: Always
         name: stuff-control
         envFrom:
         - secretRef:
