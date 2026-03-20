@@ -22,7 +22,7 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       containers:
-      - image: ghcr.io/music-assistant/server:latest
+      - image: ghcr.io/music-assistant/server:2.8.0b22
         imagePullPolicy: Always
         name: music-assistant
         env:
