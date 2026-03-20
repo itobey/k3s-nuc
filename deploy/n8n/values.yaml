@@ -25,3 +25,4 @@ n8n:
     
     extraEnvVars:
       N8N_RESTRICT_FILE_ACCESS_TO: /data/n8n-input
+      NODES_EXCLUDE: []
