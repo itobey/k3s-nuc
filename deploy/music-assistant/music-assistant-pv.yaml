@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: music-assistant-pv
+  labels:
+    type: local
+spec:
+  storageClassName: music-assistant-pv
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/media/enc/docker-volumes/music-assistant"

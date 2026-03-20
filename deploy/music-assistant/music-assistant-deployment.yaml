@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: music-assistant
+  name: music-assistant
+  namespace: music-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: music-assistant
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: music-assistant
+      annotations:
+        container.apparmor.security.beta.kubernetes.io/music-assistant: unconfined
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - image: ghcr.io/music-assistant/server:latest
+        imagePullPolicy: Always
+        name: music-assistant
+        env:
+        - name: TZ
+          value: Europe/Berlin
+        - name: LOG_LEVEL
+          value: info
+        ports:
+        - containerPort: 8095
+          name: http
+        securityContext:
+          capabilities:
+            add:
+              - SYS_ADMIN
+              - DAC_READ_SEARCH
+        volumeMounts:
+        - name: music-assistant-data
+          mountPath: /data
+      volumes:
+      - name: music-assistant-data
+        persistentVolumeClaim:
+          claimName: music-assistant-pvc
+      restartPolicy: Always
