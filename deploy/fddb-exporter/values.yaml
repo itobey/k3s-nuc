@@ -60,3 +60,7 @@ fddb-exporter:
     auth:
       secretRef:
         name: fddb-exporter-secret
+
+  mcp:
+    enabled: true
+    writeToolsEnabled: true
