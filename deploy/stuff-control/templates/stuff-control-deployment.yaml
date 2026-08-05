@@ -18,7 +18,7 @@ spec:
         app: stuff-control
     spec:
       containers:
-      - image: ghcr.io/itobey/stuff-control-service:latest
+      - image: ghcr.io/itobey/stuff-control-service:0.0.10-snapshot
         imagePullPolicy: Always
         name: stuff-control
         envFrom:
