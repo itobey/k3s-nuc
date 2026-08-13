@@ -61,6 +61,12 @@ fddb-exporter:
       secretRef:
         name: fddb-exporter-secret
 
+  notification:
+    enabled: true
+    telegram:
+      secretRef:
+        name: telegram-secret
+
   mcp:
     enabled: true
     writeToolsEnabled: true
