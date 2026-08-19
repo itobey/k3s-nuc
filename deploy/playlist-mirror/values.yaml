@@ -1,5 +1,7 @@
 playlist-mirror:
   image:
+    repository: ghcr.io/itobey/playlist-mirror-wip
+    tag: latest
     pullPolicy: Always
 
   nameOverride: ""
