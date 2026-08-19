@@ -4,6 +4,9 @@ playlist-mirror:
     tag: latest
     pullPolicy: Always
 
+  imagePullSecrets:
+    - name: ghcr-pull-secret
+
   nameOverride: ""
   fullnameOverride: ""
 
