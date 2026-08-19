@@ -1,0 +1,47 @@
+playlist-mirror:
+  image:
+    pullPolicy: Always
+
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    create: true
+    name: "playlist-mirror"
+
+  ingress:
+    enabled: true
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+    hosts:
+      - host: playlist-mirror.nuc.one
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  persistence:
+    enabled: true
+    existingClaim: "playlist-mirror-pvc"
+
+  config:
+    publicBaseUrl: "https://playlist-mirror.nuc.one"
+
+  probes:
+    liveness:
+      enabled: true
+      path: /
+      port: http
+      initialDelaySeconds: 10
+      periodSeconds: 30
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+    readiness:
+      enabled: true
+      path: /
+      port: http
+      initialDelaySeconds: 5
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
