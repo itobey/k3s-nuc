@@ -1,4 +1,13 @@
+# Bitnami moved all free container images to the `bitnamilegacy` org in Aug 2025;
+# `docker.io/bitnami/influxdb:2.7.11-debian-12-r11` now 404s, so pull from there instead.
+global:
+  security:
+    allowInsecureImages: true
+
 influxdb:
+  image:
+    repository: bitnamilegacy/influxdb
+
   persistence:
     existingClaim: influxdb2-pvc
   auth:

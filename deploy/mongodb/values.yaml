@@ -1,4 +1,19 @@
 mongodb:
+  # Bitnami pulled all free container images from `docker.io/bitnami` in Aug 2025 and
+  # mirrored a frozen snapshot to `docker.io/bitnamilegacy`. The revision this chart
+  # pins by default, bitnami/mongodb:4.4.13-debian-10-r52, predates that snapshot and
+  # is now gone from BOTH orgs - it only survives in this node's containerd cache, so
+  # the pod would ImagePullBackOff on any reschedule to a clean node.
+  #
+  # bitnamilegacy still carries the unsuffixed 4.4.13 tag, which is the same MongoDB
+  # version (still required: this NUC has no AVX, so 5.0+ will not run). The digest is
+  # appended so we resolve by content and not by a floating tag; the chart renders the
+  # image as "<registry>/<repository>:<tag>", and "4.4.13@sha256:..." is a valid
+  # reference in that position.
+  image:
+    repository: bitnamilegacy/mongodb
+    tag: "4.4.13@sha256:99b887ffd91d835fad56cc067b203d943fdbc76d42eeac9764461132418c388e"
+
   architecture: standalone
 
   replicaCount: 1

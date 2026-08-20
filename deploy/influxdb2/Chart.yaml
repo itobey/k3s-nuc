@@ -1,6 +1,6 @@
 apiVersion: "v2"
 name: "influxdb2-umbrella"
-version: 1
+version: "1"
 dependencies:
   - name: influxdb
     version: 6.6.1
