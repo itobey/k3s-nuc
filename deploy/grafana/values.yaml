@@ -16,6 +16,18 @@ grafana:
     type: pvc
     existingClaim: grafana-pvc
 
+  # the hostPath PV has old data (0700 dirs) from before the chart migration;
+  # root needs DAC_OVERRIDE to traverse them, CAP_CHOWN alone isn't enough
+  initChownData:
+    securityContext:
+      capabilities:
+        add:
+          - CHOWN
+          - DAC_OVERRIDE
+        drop:
+          - ALL
+      runAsUser: 0
+
   service:
     port: 3000
 
