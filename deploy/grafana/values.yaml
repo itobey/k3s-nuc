@@ -1,0 +1,44 @@
+grafana:
+  fullnameOverride: "grafana"
+
+  # pinned to the version that was running before the chart migration;
+  # bumping this triggers a one-way Grafana DB migration
+  image:
+    tag: "9.2.3"
+    pullPolicy: IfNotPresent
+
+  # RWO hostPath volume, so the old pod has to go before the new one starts
+  deploymentStrategy:
+    type: Recreate
+
+  persistence:
+    enabled: true
+    type: pvc
+    existingClaim: grafana-pvc
+
+  service:
+    port: 3000
+
+  ingress:
+    enabled: true
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+    path: /
+    pathType: ImplementationSpecific
+    hosts:
+      - grafana.nuc.one
+
+  env:
+    TZ: Europe/Berlin
+    # keep using the grafana.ini that already lives on the volume
+    GF_PATHS_CONFIG: /var/lib/grafana/grafana.ini
+    GF_AUTH_ANONYMOUS_ENABLED: "true"
+    # do not let the chart re-seed/overwrite the admin user in the existing DB
+    GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
+
+  # no sidecars in use, so the ClusterRole/Binding and the test pod are dead weight
+  rbac:
+    create: false
+
+  testFramework:
+    enabled: false
