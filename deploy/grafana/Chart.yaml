@@ -1,0 +1,14 @@
+apiVersion: v2
+name: grafana-umbrella
+description: Grafana Helm chart for Kubernetes
+icon: https://raw.githubusercontent.com/grafana/grafana/main/public/img/grafana_icon.svg
+type: application
+version: 1.0.0
+appVersion: 9.2.3
+sources:
+  - https://github.com/grafana/helm-charts/tree/main/charts/grafana
+  - https://github.com/grafana/grafana
+dependencies:
+  - name: grafana
+    repository: https://grafana.github.io/helm-charts
+    version: 10.5.15
