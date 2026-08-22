@@ -1,7 +1,7 @@
 playlist-mirror:
   image:
     repository: ghcr.io/itobey/playlist-mirror-wip
-    tag: latest
+    tag: 0.1.3
     pullPolicy: Always
 
   imagePullSecrets:
