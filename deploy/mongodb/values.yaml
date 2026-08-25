@@ -12,7 +12,7 @@ mongodb:
   # reference in that position.
   image:
     repository: bitnamilegacy/mongodb
-    tag: "4.4.13@sha256:99b887ffd91d835fad56cc067b203d943fdbc76d42eeac9764461132418c388e"
+    tag: "4.4.15@sha256:916202d7af766dd88c2fff63bf711162c9d708ac7a3ffccd2aa812e3f03ae209"
 
   architecture: standalone
 
