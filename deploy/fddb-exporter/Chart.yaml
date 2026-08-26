@@ -3,5 +3,5 @@ name: "fddb-exporter-umbrella"
 version: 1.0.0
 dependencies:
   - name: fddb-exporter
-    version: 2.4.1
+    version: 2.4.2
     repository: "oci://ghcr.io/itobey/charts"
