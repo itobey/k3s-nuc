@@ -12,6 +12,7 @@ spec:
       labels:
         name: zwave
     spec:
+      enableServiceLinks: false
       containers:
         - name: zwave
           image: zwavejs/zwave-js-ui:11.22.3
@@ -30,6 +31,9 @@ spec:
               name: zwavestick
             - mountPath: /usr/src/app/store
               name: data
+          env:
+            - name: ZWAVE_PORT
+              value: /dev/zwave
       volumes:
         - name: zwavestick
           hostPath:
