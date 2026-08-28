@@ -1,4 +1,6 @@
 gitea:
+  image:
+    tag: "1.27.2"
   service:
     http:
       port: 3001
@@ -11,20 +13,20 @@ gitea:
     claimName: gitea-pvc
   postgresql:
     enabled: true
-    persistence:
-      mount: true
-      create: false
-      claimName: gitea-db-pvc
     image:
       tag: 15.10.0
   postgresql-ha:
     enabled: false
-  redis-cluster:
+  valkey-cluster:
+    enabled: false
+  valkey:
     enabled: false
   gitea:
     admin:
       existingSecret: gitea-admin-secret
     config:
+      actions:
+        ENABLED: false
       database:
         DB_TYPE: postgres
       server:
