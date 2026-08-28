@@ -3,5 +3,5 @@ name: "playlist-mirror-umbrella"
 version: 1.0.0
 dependencies:
   - name: playlist-mirror
-    version: 1.0.0
+    version: 1.0.2
     repository: "oci://ghcr.io/itobey/charts"
