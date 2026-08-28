@@ -13,6 +13,10 @@ gitea:
     claimName: gitea-pvc
   postgresql:
     enabled: true
+    primary:
+      persistence:
+        enabled: true
+        existingClaim: gitea-db-pvc
     image:
       tag: 15.10.0
   postgresql-ha:
