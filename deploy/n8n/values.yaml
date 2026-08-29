@@ -3,6 +3,8 @@ n8n:
 
   timezone: "Europe/Berlin"
 
+  existingEncryptionKeySecret: "n8n-encryption-key"
+
   redis:
     enabled: false
 
