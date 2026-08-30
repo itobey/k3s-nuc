@@ -12,6 +12,14 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: headlamp
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: headlamp
+      namespace: headlamp
+      jsonPointers:
+        - /spec/template/spec/hostUsers
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
