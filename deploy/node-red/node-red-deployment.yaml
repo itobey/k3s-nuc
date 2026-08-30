@@ -19,7 +19,7 @@ spec:
     spec:
       initContainers:
       - name: install-node-red-modules
-        image: nodered/node-red:4.1.10
+        image: nodered/node-red:5.0.4-24
         imagePullPolicy: IfNotPresent
         command:
         - /bin/sh
@@ -28,7 +28,10 @@ spec:
         - |
           set -eu
 
-          if node -e '
+          runtime_marker=/data/.node-red-runtime
+          runtime_signature="$(node -p '[process.platform, process.arch, process.versions.modules].join("-")')"
+
+          if [ "$(cat "$runtime_marker" 2>/dev/null || true)" = "$runtime_signature" ] && node -e '
             const expected = {
               "node-red-contrib-actionflows": "2.1.2",
               "node-red-contrib-countdown": "1.3.2",
@@ -52,11 +55,12 @@ spec:
               if (installed !== version) process.exit(1);
             }
           '; then
-            echo "Node-RED modules already match the requested versions"
+            echo "Node-RED modules already match the requested versions and runtime"
             exit 0
           fi
 
           cd /data
+          npm pkg set 'allowScripts.es5-ext=false' --json
           npm install --omit=dev --no-audit --no-fund --save-exact \
             node-red-contrib-actionflows@2.1.2 \
             node-red-contrib-countdown@1.3.2 \
@@ -68,6 +72,8 @@ spec:
             node-red-contrib-timecheck@1.1.0 \
             node-red-contrib-tplink@1.0.1 \
             node-red-node-timeswitch@1.1.1
+
+          printf '%s\n' "$runtime_signature" > "$runtime_marker"
         securityContext:
           allowPrivilegeEscalation: false
           runAsUser: 0
@@ -76,7 +82,7 @@ spec:
         - name: node-red-persistent-storage
           mountPath: /data
       containers:
-      - image: nodered/node-red:4.1.10
+      - image: nodered/node-red:5.0.4-24
         imagePullPolicy: IfNotPresent
         name: node-red
         env:
