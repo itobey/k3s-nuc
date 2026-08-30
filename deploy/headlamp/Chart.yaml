@@ -1,0 +1,12 @@
+apiVersion: v2
+name: headlamp-umbrella
+description: Headlamp deployment for the k3s cluster
+type: application
+version: 1.0.0
+appVersion: 0.44.0
+sources:
+  - https://github.com/kubernetes-sigs/headlamp
+dependencies:
+  - name: headlamp
+    repository: https://kubernetes-sigs.github.io/headlamp/
+    version: 0.44.0

@@ -1,0 +1,21 @@
+headlamp:
+  config:
+    unsafeUseServiceAccountToken: false
+    oidc:
+      secret:
+        create: false
+
+  # Do not grant the Headlamp server pod access to manage the cluster.
+  clusterRoleBinding:
+    create: false
+
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
+    hosts:
+      - host: headlamp.nuc.one
+        paths:
+          - path: /
+            type: ImplementationSpecific
