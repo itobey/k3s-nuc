@@ -17,8 +17,66 @@ spec:
       labels:
         app: node-red
     spec:
+      initContainers:
+      - name: install-node-red-modules
+        image: nodered/node-red:4.1.10
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        args:
+        - |
+          set -eu
+
+          if node -e '
+            const expected = {
+              "node-red-contrib-actionflows": "2.1.2",
+              "node-red-contrib-countdown": "1.3.2",
+              "node-red-contrib-home-assistant-websocket": "0.80.3",
+              "node-red-contrib-loop": "1.0.1",
+              "node-red-contrib-repeat": "0.0.27",
+              "node-red-contrib-stoptimer": "0.0.7",
+              "node-red-contrib-time-range-switch": "1.2.0",
+              "node-red-contrib-timecheck": "1.1.0",
+              "node-red-contrib-tplink": "1.0.1",
+              "node-red-node-timeswitch": "1.1.1"
+            };
+
+            for (const [name, version] of Object.entries(expected)) {
+              let installed;
+              try {
+                installed = require(`/data/node_modules/${name}/package.json`).version;
+              } catch (_) {
+                process.exit(1);
+              }
+              if (installed !== version) process.exit(1);
+            }
+          '; then
+            echo "Node-RED modules already match the requested versions"
+            exit 0
+          fi
+
+          cd /data
+          npm install --omit=dev --no-audit --no-fund --save-exact \
+            node-red-contrib-actionflows@2.1.2 \
+            node-red-contrib-countdown@1.3.2 \
+            node-red-contrib-home-assistant-websocket@0.80.3 \
+            node-red-contrib-loop@1.0.1 \
+            node-red-contrib-repeat@0.0.27 \
+            node-red-contrib-stoptimer@0.0.7 \
+            node-red-contrib-time-range-switch@1.2.0 \
+            node-red-contrib-timecheck@1.1.0 \
+            node-red-contrib-tplink@1.0.1 \
+            node-red-node-timeswitch@1.1.1
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
+          runAsGroup: 0
+        volumeMounts:
+        - name: node-red-persistent-storage
+          mountPath: /data
       containers:
-      - image: ghcr.io/itobey/node-red-ha-ready/node-red-ha-ready:4.1.2
+      - image: nodered/node-red:4.1.10
         imagePullPolicy: IfNotPresent
         name: node-red
         env:
