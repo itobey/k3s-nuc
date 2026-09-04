@@ -7,4 +7,4 @@ appVersion: 2.35.7
 dependencies:
   - name: n8n
     repository: https://community-charts.github.io/helm-charts
-    version: 1.24.32
+    version: 1.24.37
