@@ -26,16 +26,16 @@ spec:
         - secretRef:
             name: wireguard-secret
         securityContext:
+          allowPrivilegeEscalation: false
           capabilities:
             add:
               - NET_ADMIN
-              - SYS_MODULE
-          privileged: true
+          privileged: false
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
           - name: wg-config
             mountPath: /config
-          - name: host-volumes
-            mountPath: /lib/modules
         ports:
         - containerPort: 51820
           protocol: UDP
@@ -50,7 +50,3 @@ spec:
         - name: wg-config
           persistentVolumeClaim:
             claimName: pvc-wireguard
-        - name: host-volumes
-          hostPath:
-            path: /lib/modules
-            type: Directory
