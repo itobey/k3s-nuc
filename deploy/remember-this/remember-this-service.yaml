@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: remember-this
+  namespace: remember-this
+  labels:
+    app: remember-this
+spec:
+  selector:
+    app: remember-this
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http
+  type: ClusterIP
