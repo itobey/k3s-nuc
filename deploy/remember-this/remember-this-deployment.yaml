@@ -22,6 +22,8 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
         fsGroup: 10001
+      imagePullSecrets:
+        - name: ghcr-pull-secret
       containers:
       - name: remember-this
         image: ghcr.io/itobey/remember-this:0.1
