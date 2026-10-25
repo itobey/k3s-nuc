@@ -26,7 +26,7 @@ spec:
         - name: ghcr-pull-secret
       containers:
       - name: remember-this
-        image: ghcr.io/itobey/remember-this:0.1
+        image: ghcr.io/itobey/remember-this:0.2
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
