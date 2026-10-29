@@ -17,13 +17,57 @@ spec:
       labels:
         app: stuff-control
     spec:
+      initContainers:
+      - name: validate-diary-path
+        image: ghcr.io/itobey/stuff-control-service:0.0.10-snapshot
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          case "$WEEKLY_REVIEW_DIARY_HOST_SUBPATH" in
+            ""|/*|.|..|./*|../*|*/./*|*/../*|*/.|*/..)
+              echo "Diary host subpath must be a non-empty relative path without dot segments" >&2
+              exit 1
+              ;;
+          esac
+          if [ ! -d "/diary-host/$WEEKLY_REVIEW_DIARY_HOST_SUBPATH" ]; then
+            echo "Configured Diary directory does not exist" >&2
+            exit 1
+          fi
+        volumeMounts:
+        - name: diary
+          mountPath: /diary-host
+          readOnly: true
+        env:
+        - name: WEEKLY_REVIEW_DIARY_HOST_SUBPATH
+          valueFrom:
+            secretKeyRef:
+              name: stuff-control-weekly-review
+              key: WEEKLY_REVIEW_DIARY_HOST_SUBPATH
       containers:
       - image: ghcr.io/itobey/stuff-control-service:latest
         imagePullPolicy: Always
         name: stuff-control
+        volumeMounts:
+        - name: diary
+          mountPath: /data/diary
+          subPathExpr: $(WEEKLY_REVIEW_DIARY_HOST_SUBPATH)
+          readOnly: true
+        env:
+        - name: WEEKLY_REVIEW_DIARY_HOST_SUBPATH
+          valueFrom:
+            secretKeyRef:
+              name: stuff-control-weekly-review
+              key: WEEKLY_REVIEW_DIARY_HOST_SUBPATH
         envFrom:
         - secretRef:
             name: stuff-control-secret
+        - secretRef:
+            name: stuff-control-weekly-review
       restartPolicy: Always
+      volumes:
+      - name: diary
+        hostPath:
+          path: /media/enc
+          type: Directory
       imagePullSecrets:
       - name: ghcr-pull-secret
