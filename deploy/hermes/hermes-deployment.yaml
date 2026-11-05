@@ -32,6 +32,13 @@ spec:
         args:
         - gateway
         - run
+        ports:
+        - name: dashboard
+          containerPort: 9119
+        envFrom:
+        - secretRef:
+            name: hermes-dashboard-auth
+            optional: true
         env:
         - name: HERMES_HOME
           value: /opt/data
@@ -43,6 +50,12 @@ spec:
           value: Europe/Berlin
         - name: GIT_CONFIG_GLOBAL
           value: /opt/data/home/.gitconfig
+        - name: HERMES_DASHBOARD
+          value: "1"
+        - name: HERMES_DASHBOARD_HOST
+          value: 0.0.0.0
+        - name: HERMES_DASHBOARD_PUBLIC_URL
+          value: https://hermes.nuc.one
         # Loopback only: used by exec probes, never published as a Service.
         # The official bootstrap generates and persists its API key in .env.
         - name: API_SERVER_ENABLED
