@@ -4,6 +4,8 @@ gitea:
   service:
     http:
       port: 3001
+    ssh:
+      port: 2222 # Match the rootless Gitea SSH listener.
   ingress:
     enabled: false
   persistence:

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hermes-pv
+  labels:
+    type: local
+spec:
+  storageClassName: hermes-pv
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: hermes-pvc
+    namespace: hermes
+  hostPath:
+    path: /media/enc/docker-volumes/hermes
+    type: Directory
