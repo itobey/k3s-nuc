@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes
+  namespace: hermes
+  labels:
+    app: hermes
+spec:
+  # The gateway and SQLite state must have a single writer.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: hermes
+  template:
+    metadata:
+      labels:
+        app: hermes
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 240
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: hermes
+        image: nousresearch/hermes-agent:v0.22.7
+        imagePullPolicy: IfNotPresent
+        # Keep the image ENTRYPOINT: its s6 init reaps children, supervises
+        # the gateway, and drops the agent to the hermes user (UID 10000).
+        args:
+        - gateway
+        - run
+        env:
+        - name: HERMES_HOME
+          value: /opt/data
+        - name: HERMES_WRITE_SAFE_ROOT
+          value: /opt/data
+        - name: HERMES_TIMEZONE
+          value: Europe/Berlin
+        - name: TZ
+          value: Europe/Berlin
+        - name: GIT_CONFIG_GLOBAL
+          value: /opt/data/home/.gitconfig
+        # Loopback only: used by exec probes, never published as a Service.
+        # The official bootstrap generates and persists its API key in .env.
+        - name: API_SERVER_ENABLED
+          value: "true"
+        - name: API_SERVER_HOST
+          value: 127.0.0.1
+        - name: API_SERVER_PORT
+          value: "8642"
+        - name: TELEGRAM_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hermes-telegram
+              key: TELEGRAM_BOT_TOKEN
+        - name: TELEGRAM_ALLOWED_USERS
+          valueFrom:
+            secretKeyRef:
+              name: hermes-telegram
+              key: TELEGRAM_ALLOWED_USERS
+        securityContext:
+          # The official s6 bootstrap requires root; services drop privileges.
+          # Its /run and bootstrap metadata need a writable container layer.
+          runAsUser: 0
+          runAsGroup: 0
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - FOWNER
+            - SETUID
+            - SETGID
+            - KILL
+        startupProbe:
+          exec:
+            command:
+            - curl
+            - --fail
+            - --silent
+            - --show-error
+            - --max-time
+            - "3"
+            - http://127.0.0.1:8642/health
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 60
+        readinessProbe:
+          exec:
+            command:
+            - curl
+            - --fail
+            - --silent
+            - --show-error
+            - --max-time
+            - "3"
+            - http://127.0.0.1:8642/health
+          periodSeconds: 15
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - curl
+            - --fail
+            - --silent
+            - --show-error
+            - --max-time
+            - "3"
+            - http://127.0.0.1:8642/health
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 6
+        volumeMounts:
+        - name: data
+          mountPath: /opt/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: hermes-pvc
