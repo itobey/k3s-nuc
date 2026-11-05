@@ -54,6 +54,8 @@ spec:
           value: "1"
         - name: HERMES_DASHBOARD_HOST
           value: 0.0.0.0
+        - name: HERMES_DASHBOARD_PORT
+          value: "9119"
         - name: HERMES_DASHBOARD_PUBLIC_URL
           value: https://hermes.nuc.one
         # Loopback only: used by exec probes, never published as a Service.
