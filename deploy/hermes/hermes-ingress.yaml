@@ -19,3 +19,13 @@ spec:
             name: hermes-dashboard
             port:
               name: dashboard
+  - host: hermes-webapp.nuc.one
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: hermes-dashboard
+            port:
+              name: webapp

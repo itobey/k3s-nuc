@@ -35,10 +35,11 @@ spec:
         ports:
         - name: dashboard
           containerPort: 9119
+        - name: webapp
+          containerPort: 9120
         envFrom:
         - secretRef:
             name: hermes-dashboard-auth
-            optional: true
         env:
         - name: HERMES_HOME
           value: /opt/data

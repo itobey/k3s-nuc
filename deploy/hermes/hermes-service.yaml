@@ -11,3 +11,6 @@ spec:
   - name: dashboard
     port: 9119
     targetPort: dashboard
+  - name: webapp
+    port: 9120
+    targetPort: webapp
