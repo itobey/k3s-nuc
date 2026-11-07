@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: hermes.nuc.one
+  - host: hermes-agent.nuc.one
     http:
       paths:
       - path: /
@@ -19,7 +19,7 @@ spec:
             name: hermes-dashboard
             port:
               name: dashboard
-  - host: hermes-webapp.nuc.one
+  - host: hermes.nuc.one
     http:
       paths:
       - path: /

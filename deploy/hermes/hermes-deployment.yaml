@@ -58,7 +58,7 @@ spec:
         - name: HERMES_DASHBOARD_PORT
           value: "9119"
         - name: HERMES_DASHBOARD_PUBLIC_URL
-          value: https://hermes.nuc.one
+          value: https://hermes-agent.nuc.one
         # Loopback only: used by exec probes, never published as a Service.
         # The official bootstrap generates and persists its API key in .env.
         - name: API_SERVER_ENABLED
