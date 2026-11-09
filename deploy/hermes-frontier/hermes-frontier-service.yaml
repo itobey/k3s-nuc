@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-frontier-dashboard
+  namespace: hermes-frontier
+spec:
+  type: ClusterIP
+  selector:
+    app: hermes-frontier
+  ports:
+  - name: dashboard
+    port: 9119
+    targetPort: dashboard
+  - name: webapp
+    port: 9120
+    targetPort: webapp
