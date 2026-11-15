@@ -19,6 +19,7 @@ Kubernetes manifests and Helm charts. The repository also contains encrypted cre
 | [Datadog](deploy/argo/datadog.yaml)                             | Observability          | Datadog agent for cluster monitoring                              |
 | [Datadog API Collector](deploy/argo/datadog-api-collector.yaml) | Observability          | Collects data from the Datadog API                                |
 | [FDDB Exporter](deploy/argo/fddb-exporter.yaml)                 | Observability          | Exports FDDB nutrition data                                       |
+| [Firecrawl](deploy/argo/firecrawl.yaml)                         | Automation             | Internal web scraping API for Hermes                              |
 | [Gitea](deploy/argo/gitea.yaml)                                 | Development            | Self-hosted Git repositories                                      |
 | [Grafana](deploy/argo/grafana.yaml)                             | Observability          | Dashboards for metrics and other data                             |
 | [HASS Screenshot](deploy/argo/hass-screenshot.yaml)             | Smart home             | Captures and serves Home Assistant screenshots                    |
