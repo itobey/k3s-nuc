@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: firecrawl-hermes-frontier-playwright
+  namespace: firecrawl
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/controller: playwright
+      app.kubernetes.io/instance: firecrawl
+      app.kubernetes.io/name: firecrawl
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: hermes-frontier
+          podSelector:
+            matchLabels:
+              app: hermes-frontier
+      ports:
+        - protocol: TCP
+          port: 3000
