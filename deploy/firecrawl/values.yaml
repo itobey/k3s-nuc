@@ -1,0 +1,121 @@
+controllers:
+  api:
+    containers:
+      api:
+        image: &firecrawlImage
+          tag: 2.11.743-production
+          digest: sha256:41871c2290a498de7fd1456c7c869bc0345f45646a410daa8fc1e128372ce7a6
+        envFrom: &firecrawlEnvFrom
+          - configMap: config
+          - secret: firecrawl
+        env: &queueCredentials
+          NUQ_DATABASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: NUQ_DATABASE_URL
+          NUQ_DATABASE_URL_LISTEN:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: NUQ_DATABASE_URL
+          NUQ_RABBITMQ_URL:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: NUQ_RABBITMQ_URL
+  worker:
+    containers:
+      worker:
+        image: *firecrawlImage
+        envFrom: *firecrawlEnvFrom
+        env: *queueCredentials
+  nuq-worker:
+    containers:
+      nuq-worker:
+        image: *firecrawlImage
+        envFrom: *firecrawlEnvFrom
+        env: *queueCredentials
+  nuq-prefetch-worker:
+    containers:
+      nuq-prefetch-worker:
+        image: *firecrawlImage
+        envFrom: *firecrawlEnvFrom
+        env: *queueCredentials
+  extract-worker:
+    enabled: false
+  playwright:
+    containers:
+      playwright:
+        envFrom:
+          - configMap: playwright-config
+  nuq-postgres:
+    containers:
+      postgres:
+        env:
+          POSTGRES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: POSTGRES_PASSWORD
+  rabbitmq:
+    containers:
+      rabbitmq:
+        env:
+          RABBITMQ_DEFAULT_PASS:
+            valueFrom:
+              secretKeyRef:
+                name: firecrawl
+                key: RABBITMQ_DEFAULT_PASS
+
+secrets:
+  secrets:
+    enabled: false
+
+configMaps:
+  config:
+    data:
+      NUM_WORKERS_PER_QUEUE: "2"
+      CRAWL_CONCURRENT_REQUESTS: "2"
+      MAX_CONCURRENT_JOBS: "2"
+      SEARXNG_ENDPOINT: http://searxng.searxng.svc.cluster.local:8080
+  playwright-config:
+    data:
+      MAX_CONCURRENT_PAGES: "2"
+
+persistence:
+  nuq-postgres-data:
+    storageClass: firecrawl-postgres-pv
+    volumeName: firecrawl-postgres-pv
+
+networkpolicies:
+  internal:
+    podSelector: {}
+    policyTypes:
+      - Ingress
+    rules:
+      ingress:
+        - from:
+            - podSelector: {}
+  hermes-api:
+    controller: api
+    policyTypes:
+      - Ingress
+    rules:
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: hermes
+              podSelector:
+                matchLabels:
+                  app: hermes
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: hermes-frontier
+              podSelector:
+                matchLabels:
+                  app: hermes-frontier
+          ports:
+            - protocol: TCP
+              port: 3002

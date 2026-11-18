@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: firecrawl
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://charts.obeone.cloud
+      chart: firecrawl
+      targetRevision: 3.0.23
+      helm:
+        valueFiles:
+          - $values/deploy/firecrawl/values.yaml
+    - repoURL: https://github.com/itobey/k3s-nuc.git
+      targetRevision: HEAD
+      ref: values
+      path: deploy/firecrawl/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: firecrawl
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
