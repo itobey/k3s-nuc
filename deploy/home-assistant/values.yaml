@@ -3,9 +3,6 @@ home-assistant:
   controller:
     type: Deployment
 
-  image:
-    tag: "2026.10.1"
-
   env:
     - name: TZ
       value: "Europe/Berlin"
