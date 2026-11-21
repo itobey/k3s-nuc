@@ -15,7 +15,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: zwave
-          image: zwavejs/zwave-js-ui:11.22.3
+          image: zwavejs/zwave-js-ui:11.27.0
           ports:
             - containerPort: 8091
               name: http
