@@ -1,24 +1,7 @@
 {
-  "extends": [
-    "config:recommended"
-  ],
-  "packageRules": [
-    {
-      "matchFileNames": [
-        "deploy/**/Chart.yaml"
-      ],
-      "matchManagers": [
-        "helm"
-      ]
-    },
-    {
-      "matchFileNames": [
-        "deploy/**/*.yaml"
-      ],
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "extractVersion": "^version:\\s*(?<version>\\S+)$"
-    }
-  ]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "kubernetes": {
+    "managerFilePatterns": ["/^deploy/.*\\.ya?ml$/"]
+  }
 }
