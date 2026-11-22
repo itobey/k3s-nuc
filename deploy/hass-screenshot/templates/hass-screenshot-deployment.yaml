@@ -23,7 +23,7 @@ spec:
         hostnames:
         - "grafana.nuc.one"
       containers:
-      - image: sibbl/hass-lovelace-kindle-screensaver:1.0.12
+      - image: sibbl/hass-lovelace-kindle-screensaver:1.2.0
         imagePullPolicy: IfNotPresent
         name: hass-screenshot
         env:
