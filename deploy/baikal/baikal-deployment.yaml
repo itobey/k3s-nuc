@@ -18,7 +18,7 @@ spec:
         app: baikal
     spec:
       containers:
-      - image: ckulka/baikal:0.9.4
+      - image: ghcr.io/aalmenar/baikal:0.13.0
         imagePullPolicy: IfNotPresent
         name: baikal
         env:
