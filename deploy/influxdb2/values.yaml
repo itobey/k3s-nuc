@@ -18,6 +18,9 @@ influxdb:
     annotations:
     - traefik.ingress.kubernetes.io/router.middlewares: default-collection@kubernetescrd
   influxdb:
+    # Stop the old pod before starting another process on the same database files.
+    updateStrategy:
+      type: Recreate
     resources:
       limits:
         memory: 512Mi
