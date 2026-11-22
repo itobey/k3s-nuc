@@ -33,6 +33,13 @@ spec:
           value: '8000'
         - name: PAPERLESS_URL
           value: https://paperless.nuc.one
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: paperless-secret
+              key: PAPERLESS_SECRET_KEY
+        - name: PAPERLESS_DBENGINE
+          value: "postgresql"
         - name: PAPERLESS_DBHOST
           value: "postgres.misc"
         - name: PAPERLESS_DBNAME
@@ -46,6 +53,10 @@ spec:
               key: PAPERLESS_DBPASS
         - name: PAPERLESS_OCR_LANGUAGE
           value: "deu"
+        - name: PAPERLESS_CONSUMER_DELETE_DUPLICATES
+          value: "true"
+        - name: PAPERLESS_ARCHIVE_FILE_GENERATION
+          value: "auto"
         volumeMounts:
         - name: paperless-storage
           mountPath: /usr/src/paperless/data
